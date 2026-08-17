@@ -1,165 +1,2187 @@
 <!DOCTYPE html>
-<html lang="tg">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tap Coin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+<title>Tap R</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:#050914;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    touch-action:manipulation;
+}
+
+.app{
+    width:100%;
+    max-width:480px;
+    margin:auto;
+    padding:16px 16px 95px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:900;
+}
+
+.logo span{
+    color:#ffc83d;
+}
+
+.version{
+    color:#8491a5;
+    font-size:10px;
+    background:#111b2b;
+    padding:7px 10px;
+    border-radius:20px;
+}
+
+.balance{
+    text-align:center;
+}
+
+.label{
+    color:#8290a5;
+    font-size:10px;
+    letter-spacing:1.5px;
+}
+
+.amount{
+    margin-top:6px;
+    font-size:42px;
+    font-weight:900;
+}
+
+.r{
+    color:#ffc83d;
+}
+
+.level{
+    display:inline-block;
+    margin-top:7px;
+    padding:6px 13px;
+    border-radius:20px;
+    background:#1b1c17;
+    color:#ffc83d;
+    font-size:11px;
+}
+
+.xp{
+    margin-top:15px;
+}
+
+.xp-top{
+    display:flex;
+    justify-content:space-between;
+    color:#8290a5;
+    font-size:10px;
+    margin-bottom:6px;
+}
+
+.bar{
+    height:7px;
+    background:#202b3d;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.xp-fill{
+    height:100%;
+    width:0;
+    background:#ffc83d;
+}
+
+.tap-area{
+    display:flex;
+    justify-content:center;
+    margin:32px 0 25px;
+}
+
+.tap{
+    width:225px;
+    height:225px;
+    border-radius:50%;
+    border:0;
+    color:#402800;
+    font-size:35px;
+    font-weight:900;
+
+    background:
+    radial-gradient(circle at 35% 25%,
+    #fff4ae 0,
+    #ffd64f 25%,
+    #ffad00 55%,
+    #d36b00 100%);
+
+    box-shadow:
+    0 0 0 12px rgba(255,200,61,.05),
+    0 0 60px rgba(255,170,0,.35),
+    inset 0 -18px 28px rgba(90,40,0,.3);
+
+    touch-action:none;
+}
+
+.tap:active{
+    transform:scale(.92);
+}
+
+.tap small{
+    display:block;
+    font-size:11px;
+    margin-top:6px;
+}
+
+.energy{
+    background:#101827;
+    border:1px solid rgba(255,255,255,.06);
+    padding:14px;
+    border-radius:16px;
+}
+
+.energy-top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:7px;
+    font-size:12px;
+}
+
+.energy-number{
+    color:#38dc91;
+    font-weight:bold;
+}
+
+.energy-fill{
+    height:100%;
+    width:100%;
+    background:#38dc91;
+}
+
+.combo{
+    text-align:center;
+    color:#ffc83d;
+    margin:12px;
+    font-weight:bold;
+}
+
+.card{
+    background:linear-gradient(145deg,#101827,#162238);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:18px;
+    padding:16px;
+    margin-top:15px;
+}
+
+.title{
+    display:flex;
+    justify-content:space-between;
+    font-size:17px;
+    font-weight:bold;
+    margin-bottom:13px;
+}
+
+.title small{
+    color:#7e8b9f;
+    font-size:9px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+}
+
+.boost{
+    border:0;
+    background:#1b273a;
+    color:white;
+    border-radius:13px;
+    padding:12px 4px;
+}
+
+.icon{
+    font-size:22px;
+}
+
+.name{
+    font-size:9px;
+    margin-top:5px;
+}
+
+.price{
+    font-size:9px;
+    color:#ffc83d;
+    margin-top:5px;
+}
+
+.mining{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#111d2e;
+    padding:12px;
+    border-radius:14px;
+    margin-top:9px;
+}
+
+.mining-icon{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#26344a;
+    font-size:24px;
+}
+
+.mining-info{
+    flex:1;
+}
+
+.mining-name{
+    font-size:12px;
+    font-weight:bold;
+}
+
+.mining-rate{
+    color:#38dc91;
+    font-size:10px;
+    margin-top:4px;
+}
+
+.buy{
+    border:0;
+    background:#ffc83d;
+    color:#392600;
+    padding:8px 10px;
+    border-radius:9px;
+    font-size:9px;
+    font-weight:bold;
+}
+
+.mission{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 0;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.mission:last-child{
+    border-bottom:0;
+}
+
+.mission-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.mission-icon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#1b273a;
+}
+
+.mission-name{
+    font-size:11px;
+    font-weight:bold;
+}
+
+.reward{
+    color:#ffc83d;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.claim{
+    border:0;
+    background:#4e8cff;
+    color:white;
+    padding:8px 10px;
+    border-radius:9px;
+    font-size:9px;
+}
+
+.done{
+    background:#293447;
+    color:#718096;
+}
+
+.profile-row{
+    display:flex;
+    justify-content:space-between;
+    padding:13px 0;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    font-size:12px;
+}
+
+.profile-row span{
+    color:#8290a5;
+}
+
+.referral{
+    margin-top:10px;
+    padding:11px;
+    background:#09111e;
+    border-radius:10px;
+    font-size:9px;
+    word-break:break-all;
+    color:#8996a9;
+}
+
+.copy{
+    width:100%;
+    margin-top:10px;
+    border:0;
+    padding:11px;
+    border-radius:10px;
+    background:#ffc83d;
+    color:#382600;
+    font-weight:bold;
+}
+
+.league{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.league-icon{
+    width:55px;
+    height:55px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:16px;
+    background:#6c4919;
+    font-size:28px;
+}
+
+.league-info{
+    flex:1;
+}
+
+.league-name{
+    font-weight:bold;
+}
+
+.league-info p{
+    color:#8290a5;
+    font-size:9px;
+    margin-top:4px;
+}
+
+.rank{
+    color:#ffc83d;
+    font-weight:bold;
+}
+
+.listing{
+    min-height:350px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+.listing-icon{
+    font-size:60px;
+    margin-bottom:18px;
+}
+
+.coming{
+    font-size:25px;
+    font-weight:900;
+    letter-spacing:2px;
+    color:#ffc83d;
+}
+
+.coming-sub{
+    margin-top:9px;
+    color:#78869a;
+    font-size:11px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.nav{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:480px;
+    height:74px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    background:rgba(5,9,20,.97);
+    border-top:1px solid rgba(255,255,255,.08);
+    z-index:50;
+}
+
+.nav button{
+    border:0;
+    background:none;
+    color:#718096;
+    font-size:8px;
+}
+
+.nav button span{
+    display:block;
+    font-size:19px;
+    margin-bottom:4px;
+}
+
+.nav button.active{
+    color:#ffc83d;
+}
+
+.float{
+    position:fixed;
+    z-index:100;
+    pointer-events:none;
+    color:#ffc83d;
+    font-size:19px;
+    font-weight:900;
+    animation:float .8s forwards;
+}
+
+@keyframes float{
+    from{
+        opacity:1;
+        transform:translateY(0);
     }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #111827, #020617);
-      color: white;
-      min-height: 100vh;
-      text-align: center;
+    to{
+        opacity:0;
+        transform:translateY(-100px);
     }
+}
 
-    .app {
-      max-width: 430px;
-      margin: auto;
-      padding: 20px;
-    }
+.toast{
+    position:fixed;
+    z-index:200;
+    top:25px;
+    left:50%;
+    transform:translate(-50%,-20px);
+    background:#182438;
+    padding:11px 17px;
+    border-radius:12px;
+    font-size:11px;
+    opacity:0;
+    transition:.25s;
+}
 
-    h1 {
-      margin-top: 20px;
-      font-size: 32px;
-    }
-
-    .balance {
-      margin-top: 25px;
-      font-size: 42px;
-      font-weight: bold;
-    }
-
-    .coin {
-      font-size: 20px;
-      margin-top: 5px;
-      color: #facc15;
-    }
-
-    .tap-button {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      border: none;
-      margin: 35px auto;
-      display: block;
-      background: linear-gradient(145deg, #facc15, #eab308);
-      box-shadow: 0 10px 35px rgba(234,179,8,.4);
-      font-size: 70px;
-      cursor: pointer;
-      transition: .1s;
-    }
-
-    .tap-button:active {
-      transform: scale(.92);
-    }
-
-    .energy {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .menu button {
-      padding: 17px;
-      border: none;
-      border-radius: 15px;
-      background: #1e293b;
-      color: white;
-      font-size: 16px;
-    }
-
-    .menu button:active {
-      transform: scale(.96);
-    }
-  </style>
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+</style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="toast" id="toast"></div>
 
-    <h1>🪙 Tap Coin</h1>
+<div class="app">
 
-    <div class="balance" id="balance">0</div>
-    <div class="coin">COINS</div>
-
-    <button class="tap-button" onclick="tap()">🪙</button>
-
-    <div class="energy">
-      ⚡ Energy: <span id="energy">100</span>/100
+<header class="header">
+    <div class="logo">
+        <span>R</span> Tap
     </div>
 
-    <div class="menu">
-      <button onclick="missions()">🎯 Missions</button>
-      <button onclick="invite()">👥 Invite</button>
-      <button onclick="rating()">🏆 Rating</button>
-      <button onclick="withdraw()">💸 Withdraw</button>
+    <div class="version">
+        v4.0
+    </div>
+</header>
+
+
+<!-- HOME -->
+
+<section class="page active" id="home">
+
+<div class="balance">
+
+    <div class="label">
+        BALANCE
     </div>
 
-  </div>
+    <div class="amount">
+        <span id="balance">0</span>
+        <span class="r">R</span>
+    </div>
 
-  <script>
-    let balance = Number(localStorage.getItem("balance")) || 0;
-    let energy = Number(localStorage.getItem("energy")) || 100;
+    <div class="level">
+        ⭐ LEVEL <span id="level">1</span>
+    </div>
 
-    function update() {
-      document.getElementById("balance").innerText = balance;
-      document.getElementById("energy").innerText = energy;
+</div>
 
-      localStorage.setItem("balance", balance);
-      localStorage.setItem("energy", energy);
-    }
 
-    function tap() {
-      if (energy <= 0) {
-        alert("⚡ Energy тамом шуд!");
-        return;
-      }
+<div class="xp">
 
-      balance++;
-      energy--;
+    <div class="xp-top">
+        <span>XP</span>
 
-      update();
-    }
+        <span>
+            <span id="xp">0</span> /
+            <span id="xpMax">1000</span>
+        </span>
+    </div>
 
-    function missions() {
-      alert("🎯 Missions\n\nМиссияҳо ба зудӣ илова мешаванд.");
-    }
+    <div class="bar">
+        <div class="xp-fill" id="xpFill"></div>
+    </div>
 
-    function invite() {
-      alert("👥 Invite\n\nСистемаи даъвати дӯст ба зудӣ.");
-    }
+</div>
 
-    function rating() {
-      alert("🏆 Rating\n\nРейтинг ба зудӣ илова мешавад.");
-    }
 
-    function withdraw() {
-      alert("💸 Withdraw\n\nСистемаи гирифтани маблағ ба зудӣ.");
-    }
+<div class="tap-area">
 
-    setInterval(() => {
-      if (energy < 100) {
-        energy++;
-        update();
-      }
-    }, 3000);
+<button class="tap" id="tap">
 
-    update();
-  </script>
+    TAP
+
+    <small>
+        +<span id="tapPower">1</span> R
+    </small>
+
+</button>
+
+</div>
+
+
+<div class="energy">
+
+    <div class="energy-top">
+
+        <span>⚡ Energy</span>
+
+        <span class="energy-number">
+            <span id="energy">1000</span> /
+            <span id="maxEnergy">1000</span>
+        </span>
+
+    </div>
+
+    <div class="bar">
+        <div class="energy-fill"
+             id="energyFill"></div>
+    </div>
+
+</div>
+
+
+<div class="combo">
+🔥 Combo x<span id="combo">1</span>
+</div>
+
+
+<!-- BOOSTS -->
+
+<div class="card">
+
+<div class="title">
+    🚀 Boosts
+    <small>POWER</small>
+</div>
+
+<div class="grid">
+
+<button class="boost" id="fullEnergy">
+
+<div class="icon">⚡</div>
+<div class="name">Full Energy</div>
+<div class="price">500 R</div>
+
+</button>
+
+
+<button class="boost" id="double">
+
+<div class="icon">✨</div>
+<div class="name">2× Tap</div>
+<div class="price">1,000 R</div>
+
+</button>
+
+
+<button class="boost" id="turbo">
+
+<div class="icon">🔥</div>
+<div class="name">Turbo</div>
+<div class="price">2,500 R</div>
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- TAP BOT -->
+
+<div class="card">
+
+<div class="title">
+    🤖 Tap Bot
+    <small id="botStatus">OFF</small>
+</div>
+
+<div class="grid">
+
+<button class="boost" id="buyBot">
+
+<div class="icon">🤖</div>
+<div class="name">Auto Tap</div>
+<div class="price" id="botPrice">5,000 R</div>
+
+</button>
+
+
+<button class="boost" id="power">
+
+<div class="icon">👆</div>
+<div class="name">Tap Power</div>
+<div class="price" id="powerPrice">2,000 R</div>
+
+</button>
+
+
+<button class="boost" id="energyUpgrade">
+
+<div class="icon">⚡</div>
+<div class="name">Energy Max</div>
+<div class="price" id="energyPrice">3,000 R</div>
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- MINING -->
+
+<div class="card">
+
+<div class="title">
+    ⛏️ Mining
+    <small>HOURLY</small>
+</div>
+
+
+<div class="mining">
+
+<div class="mining-icon">
+    ⛏️
+</div>
+
+<div class="mining-info">
+
+<div class="mining-name">
+    Miner I
+</div>
+
+<div class="mining-rate">
+    +100 R / hour
+</div>
+
+</div>
+
+<button class="buy" id="miner1">
+    10,000 R
+</button>
+
+</div>
+
+
+<div class="mining">
+
+<div class="mining-icon">
+    ⚒️
+</div>
+
+<div class="mining-info">
+
+<div class="mining-name">
+    Miner II
+</div>
+
+<div class="mining-rate">
+    +600 R / hour
+</div>
+
+</div>
+
+<button class="buy" id="miner2">
+    50,000 R
+</button>
+
+</div>
+
+
+<div class="mining">
+
+<div class="mining-icon">
+    💎
+</div>
+
+<div class="mining-info">
+
+<div class="mining-name">
+    Miner III
+</div>
+
+<div class="mining-rate">
+    +3,000 R / hour
+</div>
+
+</div>
+
+<button class="buy" id="miner3">
+    250,000 R
+</button>
+
+</div>
+
+
+<div class="mining">
+
+<div class="mining-icon">
+    🚀
+</div>
+
+<div class="mining-info">
+
+<div class="mining-name">
+    Miner IV
+</div>
+
+<div class="mining-rate">
+    +15,000 R / hour
+</div>
+
+</div>
+
+<button class="buy" id="miner4">
+    1,000,000 R
+</button>
+
+</div>
+
+</div>
+
+
+<!-- DAILY -->
+
+<div class="card">
+
+<div class="title">
+    🎁 Daily Reward
+</div>
+
+<button class="copy" id="daily">
+    Claim +1,000 R
+</button>
+
+</div>
+
+</section>
+
+
+<!-- MISSIONS -->
+
+<section class="page" id="missions">
+
+<div class="card">
+
+<div class="title">
+    🎯 Missions
+    <small>REWARDS</small>
+</div>
+
+
+<div class="mission">
+
+<div class="mission-left">
+
+<div class="mission-icon">
+    👆
+</div>
+
+<div>
+
+<div class="mission-name">
+    Tap 100 times
+</div>
+
+<div class="reward">
+    +1,000 R
+</div>
+
+</div>
+
+</div>
+
+<button class="claim" id="m100">
+    0/100
+</button>
+
+</div>
+
+
+<div class="mission">
+
+<div class="mission-left">
+
+<div class="mission-icon">
+    R
+</div>
+
+<div>
+
+<div class="mission-name">
+    Earn 10,000 R
+</div>
+
+<div class="reward">
+    +2,500 R
+</div>
+
+</div>
+
+</div>
+
+<button class="claim" id="mCoins">
+    Claim
+</button>
+
+</div>
+
+
+<div class="mission">
+
+<div class="mission-left">
+
+<div class="mission-icon">
+    🔥
+</div>
+
+<div>
+
+<div class="mission-name">
+    Reach Combo x10
+</div>
+
+<div class="reward">
+    +3,000 R
+</div>
+
+</div>
+
+</div>
+
+<button class="claim" id="mCombo">
+    Claim
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FRIENDS -->
+
+<section class="page" id="friends">
+
+<div class="card">
+
+<div class="title">
+    👥 Friends
+    <small>REFERRAL</small>
+</div>
+
+<p style="color:#8290a5;font-size:11px">
+Invite friends and earn R.
+</p>
+
+<div class="referral" id="referral">
+Telegram referral link
+</div>
+
+<button class="copy" id="copy">
+    Copy Invite Link
+</button>
+
+</div>
+
+</section>
+
+
+<!-- LEAGUE -->
+
+<section class="page" id="league">
+
+<div class="card">
+
+<div class="title">
+    🏆 League
+    <small>WEEKLY</small>
+</div>
+
+<div class="league">
+
+<div class="league-icon">
+    🥇
+</div>
+
+<div class="league-info">
+
+<div class="league-name">
+    Gold League
+</div>
+
+<p>
+Keep tapping to climb.
+</p>
+
+</div>
+
+<div class="rank">
+    #12
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section class="page" id="profile">
+
+<div class="card">
+
+<div class="title">
+    👤 Profile
+</div>
+
+<div class="profile-row">
+    <span>Username</span>
+    <b id="username">Guest</b>
+</div>
+
+<div class="profile-row">
+    <span>Balance</span>
+    <b>
+        <span id="profileBalance">0</span> R
+    </b>
+</div>
+
+<div class="profile-row">
+    <span>Level</span>
+    <b id="profileLevel">1</b>
+</div>
+
+<div class="profile-row">
+    <span>Total Taps</span>
+    <b id="totalTaps">0</b>
+</div>
+
+<div class="profile-row">
+    <span>Tap Power</span>
+    <b id="profilePower">1</b>
+</div>
+
+<div class="profile-row">
+    <span>Bot Level</span>
+    <b id="profileBot">0</b>
+</div>
+
+<div class="profile-row">
+    <span>Mining</span>
+    <b id="profileMining">0 R/hour</b>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- LISTING -->
+
+<section class="page" id="listing">
+
+<div class="card listing">
+
+<div class="listing-icon">
+    📋
+</div>
+
+<div class="coming">
+    COMING SOON
+</div>
+
+<div class="coming-sub">
+    Listing will be available soon.
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- NAV -->
+
+<nav class="nav">
+
+<button class="active" data-page="home">
+    <span>🏠</span>
+    Home
+</button>
+
+<button data-page="missions">
+    <span>🎯</span>
+    Missions
+</button>
+
+<button data-page="friends">
+    <span>👥</span>
+    Friends
+</button>
+
+<button data-page="league">
+    <span>🏆</span>
+    League
+</button>
+
+<button data-page="profile">
+    <span>👤</span>
+    Profile
+</button>
+
+<button data-page="listing">
+    <span>📋</span>
+    Listing
+</button>
+
+</nav>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+let balance =
+Number(localStorage.getItem("r_balance") || 0);
+
+let energy =
+Number(localStorage.getItem("r_energy") || 1000);
+
+let maxEnergy =
+Number(localStorage.getItem("r_max_energy") || 1000);
+
+let xp =
+Number(localStorage.getItem("r_xp") || 0);
+
+let taps =
+Number(localStorage.getItem("r_taps") || 0);
+
+let combo =
+Number(localStorage.getItem("r_combo") || 1);
+
+let tapPower =
+Number(localStorage.getItem("r_power") || 1);
+
+let botLevel =
+Number(localStorage.getItem("r_bot") || 0);
+
+let miningRate =
+Number(localStorage.getItem("r_mining") || 0);
+
+let lastMining =
+Number(localStorage.getItem("r_last_mining") || Date.now());
+
+let doubleTap = false;
+let turbo = false;
+let botStarted = false;
+let lastTap = 0;
+
+
+/* =========================
+   FORMAT
+========================= */
+
+function number(n){
+    return Math.floor(n).toLocaleString("en-US");
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+function save(){
+
+localStorage.setItem(
+"r_balance",balance
+);
+
+localStorage.setItem(
+"r_energy",energy
+);
+
+localStorage.setItem(
+"r_max_energy",maxEnergy
+);
+
+localStorage.setItem(
+"r_xp",xp
+);
+
+localStorage.setItem(
+"r_taps",taps
+);
+
+localStorage.setItem(
+"r_combo",combo
+);
+
+localStorage.setItem(
+"r_power",tapPower
+);
+
+localStorage.setItem(
+"r_bot",botLevel
+);
+
+localStorage.setItem(
+"r_mining",miningRate
+);
+
+localStorage.setItem(
+"r_last_mining",lastMining
+);
+
+}
+
+
+/* =========================
+   MINING REWARD
+========================= */
+
+function calculateMining(){
+
+if(miningRate <= 0)
+return 0;
+
+let now = Date.now();
+
+let seconds =
+(now-lastMining)/1000;
+
+let reward =
+seconds/3600*miningRate;
+
+if(reward >= 1){
+
+balance += reward;
+
+lastMining = now;
+
+save();
+
+}
+
+return reward;
+}
+
+
+/* =========================
+   UPDATE
+========================= */
+
+function update(){
+
+calculateMining();
+
+let level =
+Math.floor(xp/1000)+1;
+
+let xpMax =
+level*1000;
+
+
+document.getElementById(
+"balance"
+).textContent =
+number(balance);
+
+
+document.getElementById(
+"energy"
+).textContent =
+number(energy);
+
+
+document.getElementById(
+"maxEnergy"
+).textContent =
+number(maxEnergy);
+
+
+document.getElementById(
+"level"
+).textContent =
+level;
+
+
+document.getElementById(
+"xp"
+).textContent =
+number(xp);
+
+
+document.getElementById(
+"xpMax"
+).textContent =
+number(xpMax);
+
+
+document.getElementById(
+"xpFill"
+).style.width =
+Math.min(
+xp/xpMax*100,
+100
+)+"%";
+
+
+document.getElementById(
+"energyFill"
+).style.width =
+Math.max(
+0,
+energy/maxEnergy*100
+)+"%";
+
+
+document.getElementById(
+"combo"
+).textContent =
+combo;
+
+
+document.getElementById(
+"tapPower"
+).textContent =
+tapPower*
+(doubleTap?2:1);
+
+
+document.getElementById(
+"profileBalance"
+).textContent =
+number(balance);
+
+
+document.getElementById(
+"profileLevel"
+).textContent =
+level;
+
+
+document.getElementById(
+"totalTaps"
+).textContent =
+number(taps);
+
+
+document.getElementById(
+"profilePower"
+).textContent =
+tapPower;
+
+
+document.getElementById(
+"profileBot"
+).textContent =
+botLevel;
+
+
+document.getElementById(
+"profileMining"
+).textContent =
+number(miningRate)+" R/hour";
+
+
+document.getElementById(
+"m100"
+).textContent =
+Math.min(taps,100)+"/100";
+
+
+document.getElementById(
+"botStatus"
+).textContent =
+botLevel
+? "LEVEL "+botLevel
+: "OFF";
+
+
+save();
+
+}
+
+
+/* =========================
+   TAP
+========================= */
+
+function tap(fingers=1){
+
+if(energy<=0){
+
+toast("No Energy");
+
+return;
+
+}
+
+let power =
+tapPower;
+
+if(doubleTap)
+power*=2;
+
+if(turbo)
+power*=3;
+
+
+let used =
+Math.min(
+fingers,
+energy
+);
+
+
+let reward =
+power*used;
+
+
+balance+=reward;
+
+xp+=reward;
+
+energy-=used;
+
+taps+=used;
+
+
+let now =
+Date.now();
+
+if(now-lastTap<900){
+
+combo=
+Math.min(
+20,
+combo+1
+);
+
+}else{
+
+combo=1;
+
+}
+
+lastTap=now;
+
+update();
+
+float(
+"+"+number(reward)+" R"
+);
+
+}
+
+
+/* =========================
+   MULTI TOUCH
+========================= */
+
+const tapButton =
+document.getElementById("tap");
+
+
+tapButton.addEventListener(
+"touchstart",
+function(e){
+
+e.preventDefault();
+
+tap(e.touches.length);
+
+},
+{
+passive:false
+}
+);
+
+
+tapButton.addEventListener(
+"click",
+function(){
+
+if("ontouchstart" in window)
+return;
+
+tap(1);
+
+}
+);
+
+
+/* =========================
+   FLOAT
+========================= */
+
+function float(text){
+
+let el =
+document.createElement("div");
+
+el.className="float";
+
+el.textContent=text;
+
+let r =
+tapButton.getBoundingClientRect();
+
+el.style.left =
+r.left+r.width/2-25+"px";
+
+el.style.top =
+r.top+30+"px";
+
+document.body.appendChild(el);
+
+setTimeout(
+()=>el.remove(),
+800
+);
+
+}
+
+
+/* =========================
+   FULL ENERGY
+========================= */
+
+document.getElementById(
+"fullEnergy"
+).onclick=()=>{
+
+if(balance<500){
+
+toast("Need 500 R");
+
+return;
+
+}
+
+balance-=500;
+
+energy=maxEnergy;
+
+update();
+
+toast("Energy restored");
+
+};
+
+
+/* =========================
+   DOUBLE
+========================= */
+
+document.getElementById(
+"double"
+).onclick=()=>{
+
+if(balance<1000){
+
+toast("Need 1,000 R");
+
+return;
+
+}
+
+balance-=1000;
+
+doubleTap=true;
+
+update();
+
+toast("2× Tap activated");
+
+setTimeout(
+()=>{
+
+doubleTap=false;
+
+update();
+
+toast("2× Tap ended");
+
+},
+60000
+);
+
+};
+
+
+/* =========================
+   TURBO
+========================= */
+
+document.getElementById(
+"turbo"
+).onclick=()=>{
+
+if(balance<2500){
+
+toast("Need 2,500 R");
+
+return;
+
+}
+
+balance-=2500;
+
+turbo=true;
+
+update();
+
+toast("Turbo activated");
+
+setTimeout(
+()=>{
+
+turbo=false;
+
+update();
+
+toast("Turbo ended");
+
+},
+30000
+);
+
+};
+
+
+/* =========================
+   TAP BOT
+========================= */
+
+document.getElementById(
+"buyBot"
+).onclick=()=>{
+
+let price;
+
+if(botLevel===0)
+price=5000;
+
+else if(botLevel===1)
+price=15000;
+
+else if(botLevel===2)
+price=50000;
+
+else{
+
+toast("Maximum level");
+
+return;
+
+}
+
+
+if(balance<price){
+
+toast(
+"Need "+number(price)+" R"
+);
+
+return;
+
+}
+
+balance-=price;
+
+botLevel++;
+
+update();
+
+toast(
+"Auto Tap Level "+botLevel
+);
+
+startBot();
+
+};
+
+
+/* =========================
+   BOT
+========================= */
+
+function startBot(){
+
+if(botStarted)
+return;
+
+botStarted=true;
+
+setInterval(
+()=>{
+
+if(botLevel<=0)
+return;
+
+if(energy<=0)
+return;
+
+tap(1);
+
+},
+botLevel===1
+?1000
+:botLevel===2
+?500
+:250
+);
+
+}
+
+
+/* =========================
+   POWER
+========================= */
+
+document.getElementById(
+"power"
+).onclick=()=>{
+
+let price =
+2000*tapPower;
+
+if(balance<price){
+
+toast(
+"Need "+number(price)+" R"
+);
+
+return;
+
+}
+
+balance-=price;
+
+tapPower++;
+
+update();
+
+toast(
+"Tap Power increased"
+);
+
+};
+
+
+/* =========================
+   ENERGY UPGRADE
+========================= */
+
+document.getElementById(
+"energyUpgrade"
+).onclick=()=>{
+
+let price =
+3000*(maxEnergy/1000);
+
+if(balance<price){
+
+toast(
+"Need "+number(price)+" R"
+);
+
+return;
+
+}
+
+balance-=price;
+
+maxEnergy+=500;
+
+energy+=500;
+
+update();
+
+toast(
+"Maximum Energy increased"
+);
+
+};
+
+
+/* =========================
+   MINING
+========================= */
+
+function buyMining(
+price,
+rate,
+button
+){
+
+if(balance<price){
+
+toast(
+"Need "+number(price)+" R"
+);
+
+return;
+
+}
+
+balance-=price;
+
+miningRate+=rate;
+
+button.textContent="ACTIVE";
+
+button.classList.add("done");
+
+button.disabled=true;
+
+update();
+
+toast(
+"Mining activated"
+);
+
+}
+
+
+document.getElementById(
+"miner1"
+).onclick=()=>{
+
+buyMining(
+10000,
+100,
+document.getElementById("miner1")
+);
+
+};
+
+
+document.getElementById(
+"miner2"
+).onclick=()=>{
+
+buyMining(
+50000,
+600,
+document.getElementById("miner2")
+);
+
+};
+
+
+document.getElementById(
+"miner3"
+).onclick=()=>{
+
+buyMining(
+250000,
+3000,
+document.getElementById("miner3")
+);
+
+};
+
+
+document.getElementById(
+"miner4"
+).onclick=()=>{
+
+buyMining(
+1000000,
+15000,
+document.getElementById("miner4")
+);
+
+};
+
+
+/* =========================
+   DAILY
+========================= */
+
+document.getElementById(
+"daily"
+).onclick=()=>{
+
+let today =
+new Date().toDateString();
+
+let old =
+localStorage.getItem("r_daily");
+
+if(old===today){
+
+toast(
+"Already claimed"
+);
+
+return;
+
+}
+
+balance+=1000;
+
+xp+=1000;
+
+localStorage.setItem(
+"r_daily",
+today
+);
+
+update();
+
+toast(
+"+1,000 R"
+);
+
+};
+
+
+/* =========================
+   MISSIONS
+========================= */
+
+document.getElementById(
+"m100"
+).onclick=()=>{
+
+if(taps<100){
+
+toast(
+"Tap 100 times first"
+);
+
+return;
+
+}
+
+if(localStorage.getItem("r_m100"))
+return;
+
+balance+=1000;
+
+localStorage.setItem(
+"r_m100",
+"1"
+);
+
+document.getElementById(
+"m100"
+).textContent="DONE";
+
+update();
+
+};
+
+
+document.getElementById(
+"mCoins"
+).onclick=()=>{
+
+if(balance<10000){
+
+toast(
+"Earn 10,000 R first"
+);
+
+return;
+
+}
+
+if(localStorage.getItem("r_mcoins"))
+return;
+
+balance+=2500;
+
+localStorage.setItem(
+"r_mcoins",
+"1"
+);
+
+document.getElementById(
+"mCoins"
+).textContent="DONE";
+
+update();
+
+};
+
+
+document.getElementById(
+"mCombo"
+).onclick=()=>{
+
+if(combo<10){
+
+toast(
+"Reach Combo x10"
+);
+
+return;
+
+}
+
+if(localStorage.getItem("r_mcombo"))
+return;
+
+balance+=3000;
+
+localStorage.setItem(
+"r_mcombo",
+"1"
+);
+
+document.getElementById(
+"mCombo"
+).textContent="DONE";
+
+update();
+
+};
+
+
+/* =========================
+   NAV
+========================= */
+
+document.querySelectorAll(
+".nav button"
+).forEach(button=>{
+
+button.onclick=()=>{
+
+let page =
+button.dataset.page;
+
+document.querySelectorAll(
+".page"
+).forEach(
+p=>p.classList.remove("active")
+);
+
+document.getElementById(
+page
+).classList.add("active");
+
+document.querySelectorAll(
+".nav button"
+).forEach(
+b=>b.classList.remove("active")
+);
+
+button.classList.add("active");
+
+};
+
+});
+
+
+/* =========================
+   REFERRAL
+========================= */
+
+if(
+window.Telegram &&
+Telegram.WebApp
+){
+
+Telegram.WebApp.ready();
+
+Telegram.WebApp.expand();
+
+let user =
+Telegram.WebApp
+.initDataUnsafe
+?.user;
+
+if(user){
+
+document.getElementById(
+"username"
+).textContent =
+user.username
+?
+"@"+user.username
+:
+user.first_name;
+
+let link =
+"https://t.me/YourBot?start=ref_"+
+user.id;
+
+document.getElementById(
+"referral"
+).textContent =
+link;
+
+document.getElementById(
+"copy"
+).onclick=async()=>{
+
+try{
+
+await navigator.clipboard
+.writeText(link);
+
+toast(
+"Link copied"
+);
+
+}catch{
+
+toast(
+"Copy failed"
+);
+
+}
+
+};
+
+}
+
+}
+
+
+/* =========================
+   ENERGY REGEN
+========================= */
+
+setInterval(
+()=>{
+
+if(energy<maxEnergy){
+
+energy++;
+
+update();
+
+}
+
+},
+3000
+);
+
+
+/* =========================
+   MINING UPDATE
+========================= */
+
+setInterval(
+()=>{
+
+update();
+
+},
+1000
+);
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer;
+
+function toast(text){
+
+let el =
+document.getElementById("toast");
+
+el.textContent=text;
+
+el.classList.add("show");
+
+clearTimeout(toastTimer);
+
+toastTimer=setTimeout(
+()=>el.classList.remove("show"),
+1800
+);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+update();
+
+</script>
 
 </body>
 </html>
