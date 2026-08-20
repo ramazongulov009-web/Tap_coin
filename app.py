@@ -12,9 +12,9 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL is not set")
 
 
-# =========================
+# =========================================================
 # DATABASE
-# =========================
+# =========================================================
 
 def get_db():
     return psycopg2.connect(DATABASE_URL)
@@ -58,9 +58,9 @@ def init_db():
 init_db()
 
 
-# =========================
-# GET / CREATE PLAYER
-# =========================
+# =========================================================
+# PLAYER
+# =========================================================
 
 def get_or_create_player(user_id, username="", first_name=""):
 
@@ -74,13 +74,12 @@ def get_or_create_player(user_id, username="", first_name=""):
 
     player = cur.fetchone()
 
-    if not player:
+    if player is None:
 
         now = time.time()
 
         cur.execute("""
-            INSERT INTO players
-            (
+            INSERT INTO players (
                 user_id,
                 username,
                 first_name,
@@ -96,13 +95,21 @@ def get_or_create_player(user_id, username="", first_name=""):
                 last_update,
                 created_at
             )
-            VALUES
-            (
-                %s,%s,%s,
-                0,1000,1000,
-                0,0,1,
-                0,0,
-                %s,%s,%s
+            VALUES (
+                %s,
+                %s,
+                %s,
+                0,
+                1000,
+                1000,
+                0,
+                0,
+                1,
+                0,
+                0,
+                %s,
+                %s,
+                %s
             )
             RETURNING *
         """, (
@@ -118,15 +125,45 @@ def get_or_create_player(user_id, username="", first_name=""):
 
         conn.commit()
 
+    else:
+
+        changed = False
+
+        if username and player["username"] != username:
+            player["username"] = username
+            changed = True
+
+        if first_name and player["first_name"] != first_name:
+            player["first_name"] = first_name
+            changed = True
+
+        if changed:
+
+            cur.execute("""
+                UPDATE players
+                SET username = %s,
+                    first_name = %s
+                WHERE user_id = %s
+            """, (
+                player["username"],
+                player["first_name"],
+                user_id
+            ))
+
+            conn.commit()
+
     cur.close()
     conn.close()
 
     return player
 
 
-# =========================
+# =========================================================
 # PASSIVE SYSTEM
-# =========================
+#
+# Mining + AutoBot continue while user is outside Mini App.
+# When user returns, elapsed time is calculated.
+# =========================================================
 
 def process_passive(player):
 
@@ -140,50 +177,70 @@ def process_passive(player):
         player["last_mining"] or now
     )
 
+    # -----------------------------------------------------
+    # TIME SINCE LAST REQUEST
+    # -----------------------------------------------------
+
     elapsed = max(
-        0,
-        now - last_mining
-    )
-
-    mining_reward = (
-        elapsed / 3600
-    ) * float(player["mining_rate"])
-
-    # =====================
-    # MINING
-    # =====================
-
-    if mining_reward > 0:
-        player["balance"] += mining_reward
-
-    player["last_mining"] = now
-
-    # =====================
-    # ENERGY REGEN
-    # 1 energy / 3 sec
-    # =====================
-
-    energy_elapsed = max(
         0,
         now - last_update
     )
 
-    energy_add = energy_elapsed / 3
-
-    player["energy"] = min(
-        float(player["max_energy"]),
-        float(player["energy"]) + energy_add
+    mining_elapsed = max(
+        0,
+        now - last_mining
     )
 
-    # =====================
+    # -----------------------------------------------------
+    # MINING
+    # -----------------------------------------------------
+
+    mining_rate = float(
+        player["mining_rate"] or 0
+    )
+
+    if mining_rate > 0 and mining_elapsed > 0:
+
+        mining_reward = (
+            mining_elapsed / 3600
+        ) * mining_rate
+
+        player["balance"] += mining_reward
+
+    player["last_mining"] = now
+
+    # -----------------------------------------------------
+    # ENERGY REGEN
+    #
+    # 1 energy every 3 seconds
+    # -----------------------------------------------------
+
+    max_energy = float(
+        player["max_energy"]
+    )
+
+    energy = float(
+        player["energy"]
+    )
+
+    energy_add = elapsed / 3
+
+    energy = min(
+        max_energy,
+        energy + energy_add
+    )
+
+    player["energy"] = energy
+
+    # -----------------------------------------------------
     # AUTO BOT
-    # =====================
+    # -----------------------------------------------------
 
     bot_level = int(
-        player["bot_level"]
+        player["bot_level"] or 0
     )
 
-    if bot_level > 0:
+    if bot_level > 0 and elapsed > 0:
 
         bot_interval = {
             1: 1.0,
@@ -200,21 +257,30 @@ def process_passive(player):
 
         if bot_taps > 0:
 
+            available_energy = int(
+                player["energy"]
+            )
+
             possible_taps = min(
                 bot_taps,
-                int(player["energy"])
+                available_energy
             )
 
             if possible_taps > 0:
 
+                tap_power = float(
+                    player["tap_power"]
+                )
+
                 reward = (
                     possible_taps *
-                    float(player["tap_power"])
+                    tap_power
                 )
 
                 player["balance"] += reward
                 player["xp"] += reward
                 player["taps"] += possible_taps
+
                 player["energy"] -= possible_taps
 
     player["last_update"] = now
@@ -222,9 +288,9 @@ def process_passive(player):
     return player
 
 
-# =========================
+# =========================================================
 # SAVE PLAYER
-# =========================
+# =========================================================
 
 def save_player(player):
 
@@ -232,7 +298,10 @@ def save_player(player):
     cur = conn.cursor()
 
     cur.execute("""
-        UPDATE players SET
+        UPDATE players
+        SET
+            username = %s,
+            first_name = %s,
 
             balance = %s,
             energy = %s,
@@ -247,13 +316,12 @@ def save_player(player):
             mining_rate = %s,
 
             last_mining = %s,
-            last_update = %s,
-
-            username = %s,
-            first_name = %s
+            last_update = %s
 
         WHERE user_id = %s
     """, (
+        player["username"],
+        player["first_name"],
 
         player["balance"],
         player["energy"],
@@ -270,36 +338,43 @@ def save_player(player):
         player["last_mining"],
         player["last_update"],
 
-        player["username"],
-        player["first_name"],
-
         player["user_id"]
     ))
 
     conn.commit()
+
     cur.close()
     conn.close()
 
 
-# =========================
-# HOME
-# =========================
+# =========================================================
+# HEALTH
+# =========================================================
 
 @app.route("/")
 def home():
 
     return jsonify({
-        "message": "Tap Coin API works",
-        "status": "ok"
+        "service": "Tap Coin API",
+        "status": "online",
+        "version": "6.0"
     })
 
 
-# =========================
+@app.route("/health")
+def health():
+
+    return jsonify({
+        "status": "healthy"
+    })
+
+
+# =========================================================
 # GET PLAYER
-# =========================
+# =========================================================
 
 @app.route("/api/player", methods=["GET"])
-def player():
+def api_player():
 
     user_id = request.args.get("user_id")
 
@@ -310,7 +385,8 @@ def player():
 
     try:
         user_id = int(user_id)
-    except:
+    except ValueError:
+
         return jsonify({
             "error": "invalid user_id"
         }), 400
@@ -331,38 +407,60 @@ def player():
         first_name
     )
 
+    # Mining + AutoBot + Energy
     player = process_passive(player)
 
     save_player(player)
 
-    return jsonify(dict(player))
+    return jsonify({
+        "success": True,
+        "player": dict(player)
+    })
 
 
-# =========================
+# =========================================================
 # TAP
-# =========================
+# =========================================================
 
 @app.route("/api/tap", methods=["POST"])
-def tap():
+def api_tap():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
         }), 400
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
+    # Process passive first
     player = process_passive(player)
 
-    fingers = int(
-        data.get("fingers", 1)
+    fingers = data.get(
+        "fingers",
+        1
     )
+
+    try:
+        fingers = int(fingers)
+    except (ValueError, TypeError):
+        fingers = 1
 
     fingers = max(
         1,
@@ -383,9 +481,13 @@ def tap():
         int(player["energy"])
     )
 
+    tap_power = float(
+        player["tap_power"]
+    )
+
     reward = (
         possible *
-        float(player["tap_power"])
+        tap_power
     )
 
     player["balance"] += reward
@@ -396,35 +498,47 @@ def tap():
     save_player(player)
 
     return jsonify({
+        "success": True,
         "reward": reward,
         "player": dict(player)
     })
 
 
-# =========================
-# BUY BOT
-# =========================
+# =========================================================
+# BUY AUTO BOT
+# =========================================================
 
 @app.route("/api/bot/buy", methods=["POST"])
-def buy_bot():
+def api_buy_bot():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
         }), 400
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
     player = process_passive(player)
 
     level = int(
-        player["bot_level"]
+        player["bot_level"] or 0
     )
 
     prices = {
@@ -435,6 +549,8 @@ def buy_bot():
 
     if level >= 3:
 
+        save_player(player)
+
         return jsonify({
             "error": "Maximum bot level",
             "player": dict(player)
@@ -443,6 +559,8 @@ def buy_bot():
     price = prices[level]
 
     if player["balance"] < price:
+
+        save_player(player)
 
         return jsonify({
             "error": "Not enough balance",
@@ -458,27 +576,38 @@ def buy_bot():
     return jsonify({
         "success": True,
         "price": price,
+        "bot_level": player["bot_level"],
         "player": dict(player)
     })
 
 
-# =========================
+# =========================================================
 # BUY MINER
-# =========================
+# =========================================================
 
 @app.route("/api/mining/buy", methods=["POST"])
-def buy_mining():
+def api_buy_mining():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
-    miner = int(
-        data.get("miner", 1)
-    )
+    miner = data.get("miner", 1)
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
+        }), 400
+
+    try:
+        user_id = int(user_id)
+        miner = int(miner)
+    except (ValueError, TypeError):
+
+        return jsonify({
+            "error": "invalid data"
         }), 400
 
     miners = {
@@ -512,7 +641,7 @@ def buy_mining():
         }), 400
 
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
     player = process_passive(player)
@@ -521,6 +650,8 @@ def buy_mining():
     rate = miners[miner]["rate"]
 
     if player["balance"] < price:
+
+        save_player(player)
 
         return jsonify({
             "error": "Not enough balance",
@@ -538,37 +669,52 @@ def buy_mining():
         "success": True,
         "miner": miner,
         "rate": rate,
+        "total_mining_rate": player["mining_rate"],
         "player": dict(player)
     })
 
 
-# =========================
-# POWER UPGRADE
-# =========================
+# =========================================================
+# TAP POWER UPGRADE
+# =========================================================
 
 @app.route("/api/power", methods=["POST"])
-def power():
+def api_power():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
         }), 400
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
     player = process_passive(player)
 
-    price = 2000 * float(
-        player["tap_power"]
+    price = (
+        2000 *
+        float(player["tap_power"])
     )
 
     if player["balance"] < price:
+
+        save_player(player)
 
         return jsonify({
             "error": "Not enough balance",
@@ -583,37 +729,55 @@ def power():
 
     return jsonify({
         "success": True,
+        "price": price,
         "player": dict(player)
     })
 
 
-# =========================
+# =========================================================
 # ENERGY UPGRADE
-# =========================
+# =========================================================
 
 @app.route("/api/energy-upgrade", methods=["POST"])
-def energy_upgrade():
+def api_energy_upgrade():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
         }), 400
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
     player = process_passive(player)
 
-    price = 3000 * (
-        float(player["max_energy"]) / 1000
+    price = (
+        3000 *
+        (
+            float(player["max_energy"]) /
+            1000
+        )
     )
 
     if player["balance"] < price:
+
+        save_player(player)
 
         return jsonify({
             "error": "Not enough balance",
@@ -630,28 +794,40 @@ def energy_upgrade():
 
     return jsonify({
         "success": True,
+        "price": price,
         "player": dict(player)
     })
 
 
-# =========================
+# =========================================================
 # SAVE
-# =========================
+# =========================================================
 
 @app.route("/api/save", methods=["POST"])
-def save():
+def api_save():
 
-    data = request.get_json() or {}
+    data = request.get_json(
+        silent=True
+    ) or {}
 
     user_id = data.get("user_id")
 
     if not user_id:
+
         return jsonify({
             "error": "user_id required"
         }), 400
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
     player = get_or_create_player(
-        int(user_id)
+        user_id
     )
 
     player = process_passive(player)
@@ -664,21 +840,9 @@ def save():
     })
 
 
-# =========================
-# HEALTH
-# =========================
-
-@app.route("/health")
-def health():
-
-    return jsonify({
-        "status": "healthy"
-    })
-
-
-# =========================
-# START
-# =========================
+# =========================================================
+# RUN
+# =========================================================
 
 if __name__ == "__main__":
 
