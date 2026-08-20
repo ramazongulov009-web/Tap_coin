@@ -1,22 +1,22 @@
 import os
-from datetime import datetime, timezone
-
+import time
+from flask import Flask, request, jsonify
 import psycopg2
-from flask import Flask, jsonify, request
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not set")
 
-# =========================================================
+
+# =========================
 # DATABASE
-# =========================================================
+# =========================
 
 def get_db():
-    if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL is not configured")
-
     return psycopg2.connect(DATABASE_URL)
 
 
@@ -25,27 +25,28 @@ def init_db():
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            telegram_id BIGINT UNIQUE NOT NULL,
-            username TEXT DEFAULT 'Guest',
+        CREATE TABLE IF NOT EXISTS players (
+            user_id BIGINT PRIMARY KEY,
+
+            username TEXT DEFAULT '',
+            first_name TEXT DEFAULT '',
 
             balance DOUBLE PRECISION DEFAULT 0,
             energy DOUBLE PRECISION DEFAULT 1000,
             max_energy DOUBLE PRECISION DEFAULT 1000,
 
             xp DOUBLE PRECISION DEFAULT 0,
-            total_taps BIGINT DEFAULT 0,
+            taps BIGINT DEFAULT 0,
 
-            tap_power INTEGER DEFAULT 1,
+            tap_power DOUBLE PRECISION DEFAULT 1,
 
-            autobot_level INTEGER DEFAULT 0,
-            autobot_last_claim TIMESTAMP WITH TIME ZONE,
-
+            bot_level INTEGER DEFAULT 0,
             mining_rate DOUBLE PRECISION DEFAULT 0,
-            mining_last_claim TIMESTAMP WITH TIME ZONE,
 
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            last_mining DOUBLE PRECISION DEFAULT 0,
+            last_update DOUBLE PRECISION DEFAULT 0,
+
+            created_at DOUBLE PRECISION DEFAULT 0
         )
     """)
 
@@ -54,458 +55,454 @@ def init_db():
     conn.close()
 
 
-# =========================================================
-# TIME
-# =========================================================
-
-def utc_now():
-    return datetime.now(timezone.utc)
+init_db()
 
 
-# =========================================================
-# USER
-# =========================================================
+# =========================
+# GET / CREATE PLAYER
+# =========================
 
-def create_user(telegram_id, username):
-    current = utc_now()
+def get_or_create_player(user_id, username="", first_name=""):
 
     conn = get_db()
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
 
-    cur.execute("""
-        INSERT INTO users (
-            telegram_id,
+    cur.execute(
+        "SELECT * FROM players WHERE user_id = %s",
+        (user_id,)
+    )
+
+    player = cur.fetchone()
+
+    if not player:
+
+        now = time.time()
+
+        cur.execute("""
+            INSERT INTO players
+            (
+                user_id,
+                username,
+                first_name,
+                balance,
+                energy,
+                max_energy,
+                xp,
+                taps,
+                tap_power,
+                bot_level,
+                mining_rate,
+                last_mining,
+                last_update,
+                created_at
+            )
+            VALUES
+            (
+                %s,%s,%s,
+                0,1000,1000,
+                0,0,1,
+                0,0,
+                %s,%s,%s
+            )
+            RETURNING *
+        """, (
+            user_id,
             username,
-            balance,
-            energy,
-            max_energy,
-            xp,
-            total_taps,
-            tap_power,
-            autobot_level,
-            autobot_last_claim,
-            mining_rate,
-            mining_last_claim
-        )
-        VALUES (
-            %s, %s, 0, 1000, 1000, 0, 0, 1,
-            0, %s, 0, %s
-        )
-        ON CONFLICT (telegram_id)
-        DO UPDATE SET username = EXCLUDED.username
-        RETURNING *
-    """, (
-        telegram_id,
-        username,
-        current,
-        current
-    ))
+            first_name,
+            now,
+            now,
+            now
+        ))
 
-    user = cur.fetchone()
+        player = cur.fetchone()
 
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return user
-
-
-def get_user(telegram_id, username="Guest"):
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = %s
-    """, (telegram_id,))
-
-    user = cur.fetchone()
+        conn.commit()
 
     cur.close()
     conn.close()
 
-    if not user:
-        return create_user(
-            telegram_id,
-            username
-        )
-
-    return user
+    return player
 
 
-# =========================================================
-# PASSIVE REWARDS
-# =========================================================
+# =========================
+# PASSIVE SYSTEM
+# =========================
 
-def calculate_passive(user):
-    """
-    Mining + AutoBot-ро барои вақти гузашта ҳисоб мекунад.
-    Mini App баста бошад ҳам кор мекунад.
-    """
+def process_passive(player):
 
-    (
-        user_id,
-        telegram_id,
-        username,
-        balance,
-        energy,
-        max_energy,
-        xp,
-        total_taps,
-        tap_power,
-        autobot_level,
-        autobot_last_claim,
-        mining_rate,
-        mining_last_claim,
-        created_at
-    ) = user
+    now = time.time()
 
-    current = utc_now()
+    last_update = float(
+        player["last_update"] or now
+    )
 
-    mining_reward = 0
-    autobot_reward = 0
+    last_mining = float(
+        player["last_mining"] or now
+    )
 
-    # -----------------------------------------------------
+    elapsed = max(
+        0,
+        now - last_mining
+    )
+
+    mining_reward = (
+        elapsed / 3600
+    ) * float(player["mining_rate"])
+
+    # =====================
     # MINING
-    # -----------------------------------------------------
+    # =====================
 
-    if mining_rate > 0 and mining_last_claim:
+    if mining_reward > 0:
+        player["balance"] += mining_reward
 
-        seconds = (
-            current - mining_last_claim
-        ).total_seconds()
+    player["last_mining"] = now
 
-        if seconds > 0:
+    # =====================
+    # ENERGY REGEN
+    # 1 energy / 3 sec
+    # =====================
 
-            # Maximum offline mining = 24 hours
-            seconds = min(
-                seconds,
-                24 * 60 * 60
+    energy_elapsed = max(
+        0,
+        now - last_update
+    )
+
+    energy_add = energy_elapsed / 3
+
+    player["energy"] = min(
+        float(player["max_energy"]),
+        float(player["energy"]) + energy_add
+    )
+
+    # =====================
+    # AUTO BOT
+    # =====================
+
+    bot_level = int(
+        player["bot_level"]
+    )
+
+    if bot_level > 0:
+
+        bot_interval = {
+            1: 1.0,
+            2: 0.5,
+            3: 0.25
+        }.get(
+            bot_level,
+            0.25
+        )
+
+        bot_taps = int(
+            elapsed / bot_interval
+        )
+
+        if bot_taps > 0:
+
+            possible_taps = min(
+                bot_taps,
+                int(player["energy"])
             )
 
-            mining_reward = (
-                seconds / 3600
-            ) * mining_rate
+            if possible_taps > 0:
 
-            balance += mining_reward
+                reward = (
+                    possible_taps *
+                    float(player["tap_power"])
+                )
 
-            mining_last_claim = current
+                player["balance"] += reward
+                player["xp"] += reward
+                player["taps"] += possible_taps
+                player["energy"] -= possible_taps
 
-    else:
-        mining_last_claim = current
+    player["last_update"] = now
 
-    # -----------------------------------------------------
-    # AUTOBOT
-    # -----------------------------------------------------
-
-    if autobot_level > 0 and autobot_last_claim:
-
-        seconds = (
-            current - autobot_last_claim
-        ).total_seconds()
-
-        if seconds > 0:
-
-            # Maximum offline AutoBot = 24 hours
-            seconds = min(
-                seconds,
-                24 * 60 * 60
-            )
-
-            if autobot_level == 1:
-                taps_per_second = 1
-
-            elif autobot_level == 2:
-                taps_per_second = 2
-
-            else:
-                taps_per_second = 4
-
-            autobot_reward = (
-                seconds *
-                taps_per_second *
-                tap_power
-            )
-
-            balance += autobot_reward
-
-            autobot_last_claim = current
-
-    else:
-        autobot_last_claim = current
-
-    return {
-        "balance": balance,
-        "mining_reward": mining_reward,
-        "autobot_reward": autobot_reward,
-        "mining_last_claim": mining_last_claim,
-        "autobot_last_claim": autobot_last_claim
-    }
+    return player
 
 
-def save_passive(
-    telegram_id,
-    result
-):
+# =========================
+# SAVE PLAYER
+# =========================
+
+def save_player(player):
+
     conn = get_db()
     cur = conn.cursor()
 
     cur.execute("""
-        UPDATE users
-        SET
+        UPDATE players SET
+
             balance = %s,
-            mining_last_claim = %s,
-            autobot_last_claim = %s
-        WHERE telegram_id = %s
+            energy = %s,
+            max_energy = %s,
+
+            xp = %s,
+            taps = %s,
+
+            tap_power = %s,
+
+            bot_level = %s,
+            mining_rate = %s,
+
+            last_mining = %s,
+            last_update = %s,
+
+            username = %s,
+            first_name = %s
+
+        WHERE user_id = %s
     """, (
-        result["balance"],
-        result["mining_last_claim"],
-        result["autobot_last_claim"],
-        telegram_id
+
+        player["balance"],
+        player["energy"],
+        player["max_energy"],
+
+        player["xp"],
+        player["taps"],
+
+        player["tap_power"],
+
+        player["bot_level"],
+        player["mining_rate"],
+
+        player["last_mining"],
+        player["last_update"],
+
+        player["username"],
+        player["first_name"],
+
+        player["user_id"]
     ))
 
     conn.commit()
-
     cur.close()
     conn.close()
 
 
-# =========================================================
-# STATE
-# =========================================================
+# =========================
+# HOME
+# =========================
 
-@app.route("/api/state", methods=["GET"])
-def state():
-
-    telegram_id = request.args.get(
-        "telegram_id",
-        type=int
-    )
-
-    username = request.args.get(
-        "username",
-        "Guest"
-    )
-
-    if not telegram_id:
-        return jsonify({
-            "error": "telegram_id required"
-        }), 400
-
-    user = get_user(
-        telegram_id,
-        username
-    )
-
-    result = calculate_passive(user)
-
-    save_passive(
-        telegram_id,
-        result
-    )
-
-    user = get_user(
-        telegram_id,
-        username
-    )
-
-    (
-        user_id,
-        telegram_id,
-        username,
-        balance,
-        energy,
-        max_energy,
-        xp,
-        total_taps,
-        tap_power,
-        autobot_level,
-        autobot_last_claim,
-        mining_rate,
-        mining_last_claim,
-        created_at
-    ) = user
+@app.route("/")
+def home():
 
     return jsonify({
-        "telegram_id": telegram_id,
-        "username": username,
-
-        "balance": balance,
-
-        "energy": energy,
-        "max_energy": max_energy,
-
-        "xp": xp,
-        "total_taps": total_taps,
-
-        "tap_power": tap_power,
-
-        "autobot_level": autobot_level,
-        "mining_rate": mining_rate,
-
-        "offline_mining": result["mining_reward"],
-        "offline_autobot": result["autobot_reward"]
+        "message": "Tap Coin API works",
+        "status": "ok"
     })
 
 
-# =========================================================
+# =========================
+# GET PLAYER
+# =========================
+
+@app.route("/api/player", methods=["GET"])
+def player():
+
+    user_id = request.args.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id required"
+        }), 400
+
+    try:
+        user_id = int(user_id)
+    except:
+        return jsonify({
+            "error": "invalid user_id"
+        }), 400
+
+    username = request.args.get(
+        "username",
+        ""
+    )
+
+    first_name = request.args.get(
+        "first_name",
+        ""
+    )
+
+    player = get_or_create_player(
+        user_id,
+        username,
+        first_name
+    )
+
+    player = process_passive(player)
+
+    save_player(player)
+
+    return jsonify(dict(player))
+
+
+# =========================
 # TAP
-# =========================================================
+# =========================
 
 @app.route("/api/tap", methods=["POST"])
 def tap():
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json() or {}
 
-    telegram_id = data.get(
-        "telegram_id"
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id required"
+        }), 400
+
+    player = get_or_create_player(
+        int(user_id)
     )
 
-    username = data.get(
-        "username",
-        "Guest"
-    )
+    player = process_passive(player)
 
     fingers = int(
-        data.get(
-            "fingers",
-            1
-        )
+        data.get("fingers", 1)
     )
-
-    if not telegram_id:
-        return jsonify({
-            "error": "telegram_id required"
-        }), 400
 
     fingers = max(
         1,
-        min(fingers, 5)
+        min(fingers, 10)
     )
 
-    user = get_user(
-        telegram_id,
-        username
-    )
+    if player["energy"] < 1:
 
-    passive = calculate_passive(
-        user
-    )
-
-    balance = passive["balance"]
-
-    energy = user[4]
-    max_energy = user[5]
-    xp = user[6]
-    total_taps = user[7]
-    tap_power = user[8]
-
-    if energy <= 0:
+        save_player(player)
 
         return jsonify({
-            "error": "No Energy"
+            "error": "No Energy",
+            "player": dict(player)
         }), 400
 
-    used = min(
+    possible = min(
         fingers,
-        int(energy)
+        int(player["energy"])
     )
 
     reward = (
-        tap_power *
-        used
+        possible *
+        float(player["tap_power"])
     )
 
-    balance += reward
-    xp += reward
-    energy -= used
-    total_taps += used
+    player["balance"] += reward
+    player["xp"] += reward
+    player["taps"] += possible
+    player["energy"] -= possible
 
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
-        UPDATE users
-        SET
-            balance = %s,
-            energy = %s,
-            xp = %s,
-            total_taps = %s,
-            mining_last_claim = %s,
-            autobot_last_claim = %s
-        WHERE telegram_id = %s
-    """, (
-        balance,
-        energy,
-        xp,
-        total_taps,
-        passive["mining_last_claim"],
-        passive["autobot_last_claim"],
-        telegram_id
-    ))
-
-    conn.commit()
-
-    cur.close()
-    conn.close()
+    save_player(player)
 
     return jsonify({
-        "ok": True,
         "reward": reward,
-        "balance": balance,
-        "energy": energy,
-        "xp": xp,
-        "total_taps": total_taps
+        "player": dict(player)
     })
 
 
-# =========================================================
+# =========================
+# BUY BOT
+# =========================
+
+@app.route("/api/bot/buy", methods=["POST"])
+def buy_bot():
+
+    data = request.get_json() or {}
+
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id required"
+        }), 400
+
+    player = get_or_create_player(
+        int(user_id)
+    )
+
+    player = process_passive(player)
+
+    level = int(
+        player["bot_level"]
+    )
+
+    prices = {
+        0: 5000,
+        1: 15000,
+        2: 50000
+    }
+
+    if level >= 3:
+
+        return jsonify({
+            "error": "Maximum bot level",
+            "player": dict(player)
+        }), 400
+
+    price = prices[level]
+
+    if player["balance"] < price:
+
+        return jsonify({
+            "error": "Not enough balance",
+            "price": price,
+            "player": dict(player)
+        }), 400
+
+    player["balance"] -= price
+    player["bot_level"] += 1
+
+    save_player(player)
+
+    return jsonify({
+        "success": True,
+        "price": price,
+        "player": dict(player)
+    })
+
+
+# =========================
 # BUY MINER
-# =========================================================
+# =========================
 
 @app.route("/api/mining/buy", methods=["POST"])
 def buy_mining():
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json() or {}
 
-    telegram_id = data.get(
-        "telegram_id"
-    )
-
+    user_id = data.get("user_id")
     miner = int(
-        data.get(
-            "miner",
-            1
-        )
+        data.get("miner", 1)
     )
 
-    if not telegram_id:
+    if not user_id:
         return jsonify({
-            "error": "telegram_id required"
+            "error": "user_id required"
         }), 400
 
     miners = {
+
         1: {
             "price": 10000,
             "rate": 100
         },
+
         2: {
             "price": 50000,
             "rate": 600
         },
+
         3: {
             "price": 250000,
             "rate": 3000
         },
+
         4: {
             "price": 1000000,
             "rate": 15000
         }
+
     }
 
     if miner not in miners:
@@ -514,197 +511,185 @@ def buy_mining():
             "error": "Invalid miner"
         }), 400
 
+    player = get_or_create_player(
+        int(user_id)
+    )
+
+    player = process_passive(player)
+
     price = miners[miner]["price"]
     rate = miners[miner]["rate"]
 
-    user = get_user(
-        telegram_id
-    )
-
-    passive = calculate_passive(
-        user
-    )
-
-    balance = passive["balance"]
-    mining_rate = user[11]
-
-    if balance < price:
+    if player["balance"] < price:
 
         return jsonify({
-            "error":
-                f"Need {price} R"
+            "error": "Not enough balance",
+            "price": price,
+            "player": dict(player)
         }), 400
 
-    balance -= price
-    mining_rate += rate
+    player["balance"] -= price
 
-    conn = get_db()
-    cur = conn.cursor()
+    player["mining_rate"] += rate
 
-    cur.execute("""
-        UPDATE users
-        SET
-            balance = %s,
-            mining_rate = %s,
-            mining_last_claim = %s,
-            autobot_last_claim = %s
-        WHERE telegram_id = %s
-    """, (
-        balance,
-        mining_rate,
-        passive["mining_last_claim"],
-        passive["autobot_last_claim"],
-        telegram_id
-    ))
-
-    conn.commit()
-
-    cur.close()
-    conn.close()
+    save_player(player)
 
     return jsonify({
-        "ok": True,
-        "balance": balance,
-        "mining_rate": mining_rate
+        "success": True,
+        "miner": miner,
+        "rate": rate,
+        "player": dict(player)
     })
 
 
-# =========================================================
-# BUY AUTOBOT
-# =========================================================
+# =========================
+# POWER UPGRADE
+# =========================
 
-@app.route("/api/autobot/buy", methods=["POST"])
-def buy_autobot():
+@app.route("/api/power", methods=["POST"])
+def power():
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json() or {}
 
-    telegram_id = data.get(
-        "telegram_id"
-    )
+    user_id = data.get("user_id")
 
-    if not telegram_id:
+    if not user_id:
         return jsonify({
-            "error": "telegram_id required"
+            "error": "user_id required"
         }), 400
 
-    user = get_user(
-        telegram_id
+    player = get_or_create_player(
+        int(user_id)
     )
 
-    passive = calculate_passive(
-        user
+    player = process_passive(player)
+
+    price = 2000 * float(
+        player["tap_power"]
     )
 
-    balance = passive["balance"]
-    bot_level = user[9]
-
-    prices = {
-        1: 5000,
-        2: 15000,
-        3: 50000
-    }
-
-    next_level = (
-        bot_level + 1
-    )
-
-    if next_level not in prices:
+    if player["balance"] < price:
 
         return jsonify({
-            "error": "Maximum level"
+            "error": "Not enough balance",
+            "price": price,
+            "player": dict(player)
         }), 400
 
-    price = prices[next_level]
+    player["balance"] -= price
+    player["tap_power"] += 1
 
-    if balance < price:
-
-        return jsonify({
-            "error":
-                f"Need {price} R"
-        }), 400
-
-    balance -= price
-    bot_level = next_level
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
-        UPDATE users
-        SET
-            balance = %s,
-            autobot_level = %s,
-            mining_last_claim = %s,
-            autobot_last_claim = %s
-        WHERE telegram_id = %s
-    """, (
-        balance,
-        bot_level,
-        passive["mining_last_claim"],
-        passive["autobot_last_claim"],
-        telegram_id
-    ))
-
-    conn.commit()
-
-    cur.close()
-    conn.close()
+    save_player(player)
 
     return jsonify({
-        "ok": True,
-        "balance": balance,
-        "autobot_level": bot_level
+        "success": True,
+        "player": dict(player)
     })
 
 
-# =========================================================
+# =========================
+# ENERGY UPGRADE
+# =========================
+
+@app.route("/api/energy-upgrade", methods=["POST"])
+def energy_upgrade():
+
+    data = request.get_json() or {}
+
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id required"
+        }), 400
+
+    player = get_or_create_player(
+        int(user_id)
+    )
+
+    player = process_passive(player)
+
+    price = 3000 * (
+        float(player["max_energy"]) / 1000
+    )
+
+    if player["balance"] < price:
+
+        return jsonify({
+            "error": "Not enough balance",
+            "price": price,
+            "player": dict(player)
+        }), 400
+
+    player["balance"] -= price
+
+    player["max_energy"] += 500
+    player["energy"] += 500
+
+    save_player(player)
+
+    return jsonify({
+        "success": True,
+        "player": dict(player)
+    })
+
+
+# =========================
+# SAVE
+# =========================
+
+@app.route("/api/save", methods=["POST"])
+def save():
+
+    data = request.get_json() or {}
+
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id required"
+        }), 400
+
+    player = get_or_create_player(
+        int(user_id)
+    )
+
+    player = process_passive(player)
+
+    save_player(player)
+
+    return jsonify({
+        "success": True,
+        "player": dict(player)
+    })
+
+
+# =========================
 # HEALTH
-# =========================================================
+# =========================
 
-@app.route("/")
-def home():
+@app.route("/health")
+def health():
 
     return jsonify({
-        "status": "online",
-        "service": "Tap Coin API",
-        "version": "5.0"
+        "status": "healthy"
     })
 
 
-@app.route("/api/test")
-def test():
-
-    return jsonify({
-        "status": "ok",
-        "message": "Tap Coin API works"
-    })
-
-
-# =========================================================
-# STARTUP
-# =========================================================
-
-# Gunicorn app:app-ро истифода мебарад,
-# бинобар ин database-ро ҳангоми import месозем.
-try:
-    init_db()
-except Exception as e:
-    print(
-        "Database initialization error:",
-        e
-    )
-
+# =========================
+# START
+# =========================
 
 if __name__ == "__main__":
 
+    port = int(
+        os.environ.get(
+            "PORT",
+            10000
+        )
+    )
+
     app.run(
         host="0.0.0.0",
-        port=int(
-            os.environ.get(
-                "PORT",
-                10000
-            )
-        )
+        port=port
     )
