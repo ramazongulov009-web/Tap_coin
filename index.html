@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
-<title>Tap R</title>
+<title>Tap Coin</title>
 
 <style>
+
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
-    user-select:none;
     -webkit-tap-highlight-color:transparent;
 }
 
 body{
+    margin:0;
     background:#050914;
     color:#fff;
     font-family:Arial,sans-serif;
@@ -278,6 +278,11 @@ body{
     font-weight:bold;
 }
 
+.done{
+    background:#293447!important;
+    color:#718096!important;
+}
+
 .mission{
     display:flex;
     align-items:center;
@@ -324,11 +329,6 @@ body{
     padding:8px 10px;
     border-radius:9px;
     font-size:9px;
-}
-
-.done{
-    background:#293447;
-    color:#718096;
 }
 
 .profile-row{
@@ -483,7 +483,6 @@ body{
         opacity:1;
         transform:translateY(0);
     }
-
     to{
         opacity:0;
         transform:translateY(-100px);
@@ -508,6 +507,14 @@ body{
     opacity:1;
     transform:translate(-50%,0);
 }
+
+.status{
+    text-align:center;
+    color:#38dc91;
+    font-size:10px;
+    margin-top:8px;
+}
+
 </style>
 </head>
 
@@ -523,141 +530,137 @@ body{
     </div>
 
     <div class="version">
-        v4.0
+        v5.0
     </div>
 </header>
-
-
-<!-- HOME -->
 
 <section class="page active" id="home">
 
 <div class="balance">
 
-    <div class="label">
-        BALANCE
-    </div>
-
-    <div class="amount">
-        <span id="balance">0</span>
-        <span class="r">R</span>
-    </div>
-
-    <div class="level">
-        ⭐ LEVEL <span id="level">1</span>
-    </div>
-
+<div class="label">
+BALANCE
 </div>
 
+<div class="amount">
+<span id="balance">0</span>
+<span class="r">R</span>
+</div>
+
+<div class="level">
+⭐ LEVEL <span id="level">1</span>
+</div>
+
+<div class="status" id="serverStatus">
+Connecting...
+</div>
+
+</div>
 
 <div class="xp">
 
-    <div class="xp-top">
-        <span>XP</span>
+<div class="xp-top">
 
-        <span>
-            <span id="xp">0</span> /
-            <span id="xpMax">1000</span>
-        </span>
-    </div>
+<span>XP</span>
 
-    <div class="bar">
-        <div class="xp-fill" id="xpFill"></div>
-    </div>
+<span>
+<span id="xp">0</span> /
+<span id="xpMax">1000</span>
+</span>
 
 </div>
 
+<div class="bar">
+<div class="xp-fill" id="xpFill"></div>
+</div>
+
+</div>
 
 <div class="tap-area">
 
 <button class="tap" id="tap">
 
-    TAP
+TAP
 
-    <small>
-        +<span id="tapPower">1</span> R
-    </small>
+<small>
++<span id="tapPower">1</span> R
+</small>
 
 </button>
 
 </div>
 
-
 <div class="energy">
 
-    <div class="energy-top">
+<div class="energy-top">
 
-        <span>⚡ Energy</span>
+<span>⚡ Energy</span>
 
-        <span class="energy-number">
-            <span id="energy">1000</span> /
-            <span id="maxEnergy">1000</span>
-        </span>
+<span class="energy-number">
 
-    </div>
+<span id="energy">1000</span> /
+<span id="maxEnergy">1000</span>
 
-    <div class="bar">
-        <div class="energy-fill"
-             id="energyFill"></div>
-    </div>
+</span>
 
 </div>
 
+<div class="bar">
+
+<div class="energy-fill"
+id="energyFill"></div>
+
+</div>
+
+</div>
 
 <div class="combo">
 🔥 Combo x<span id="combo">1</span>
 </div>
 
 
-<!-- BOOSTS -->
-
 <div class="card">
 
 <div class="title">
-    🚀 Boosts
-    <small>POWER</small>
+🚀 Boosts
+<small>POWER</small>
 </div>
 
 <div class="grid">
 
 <button class="boost" id="fullEnergy">
-
 <div class="icon">⚡</div>
 <div class="name">Full Energy</div>
 <div class="price">500 R</div>
-
 </button>
 
-
 <button class="boost" id="double">
-
 <div class="icon">✨</div>
 <div class="name">2× Tap</div>
 <div class="price">1,000 R</div>
-
 </button>
 
-
 <button class="boost" id="turbo">
-
 <div class="icon">🔥</div>
 <div class="name">Turbo</div>
 <div class="price">2,500 R</div>
-
 </button>
 
 </div>
 
 </div>
 
-
-<!-- TAP BOT -->
 
 <div class="card">
 
 <div class="title">
-    🤖 Tap Bot
-    <small id="botStatus">OFF</small>
+
+🤖 Tap Bot
+
+<small id="botStatus">
+OFF
+</small>
+
 </div>
 
 <div class="grid">
@@ -665,26 +668,45 @@ body{
 <button class="boost" id="buyBot">
 
 <div class="icon">🤖</div>
-<div class="name">Auto Tap</div>
-<div class="price" id="botPrice">5,000 R</div>
+
+<div class="name">
+Auto Tap
+</div>
+
+<div class="price"
+id="botPrice">
+5,000 R
+</div>
 
 </button>
-
 
 <button class="boost" id="power">
 
 <div class="icon">👆</div>
-<div class="name">Tap Power</div>
-<div class="price" id="powerPrice">2,000 R</div>
+
+<div class="name">
+Tap Power
+</div>
+
+<div class="price"
+id="powerPrice">
+2,000 R
+</div>
 
 </button>
 
-
-<button class="boost" id="energyUpgrade">
+<button class="boost"
+id="energyUpgrade">
 
 <div class="icon">⚡</div>
-<div class="name">Energy Max</div>
-<div class="price" id="energyPrice">3,000 R</div>
+
+<div class="name">
+Energy Max
+</div>
+
+<div class="price">
+3,000 R
+</div>
 
 </button>
 
@@ -692,37 +714,38 @@ body{
 
 </div>
 
-
-<!-- MINING -->
 
 <div class="card">
 
 <div class="title">
-    ⛏️ Mining
-    <small>HOURLY</small>
-</div>
 
+⛏️ Mining
+
+<small>PASSIVE</small>
+
+</div>
 
 <div class="mining">
 
 <div class="mining-icon">
-    ⛏️
+⛏️
 </div>
 
 <div class="mining-info">
 
 <div class="mining-name">
-    Miner I
+Miner I
 </div>
 
 <div class="mining-rate">
-    +100 R / hour
++100 R / hour
 </div>
 
 </div>
 
-<button class="buy" id="miner1">
-    10,000 R
+<button class="buy"
+id="miner1">
+10,000 R
 </button>
 
 </div>
@@ -731,23 +754,24 @@ body{
 <div class="mining">
 
 <div class="mining-icon">
-    ⚒️
+⚒️
 </div>
 
 <div class="mining-info">
 
 <div class="mining-name">
-    Miner II
+Miner II
 </div>
 
 <div class="mining-rate">
-    +600 R / hour
++600 R / hour
 </div>
 
 </div>
 
-<button class="buy" id="miner2">
-    50,000 R
+<button class="buy"
+id="miner2">
+50,000 R
 </button>
 
 </div>
@@ -756,23 +780,24 @@ body{
 <div class="mining">
 
 <div class="mining-icon">
-    💎
+💎
 </div>
 
 <div class="mining-info">
 
 <div class="mining-name">
-    Miner III
+Miner III
 </div>
 
 <div class="mining-rate">
-    +3,000 R / hour
++3,000 R / hour
 </div>
 
 </div>
 
-<button class="buy" id="miner3">
-    250,000 R
+<button class="buy"
+id="miner3">
+250,000 R
 </button>
 
 </div>
@@ -781,40 +806,40 @@ body{
 <div class="mining">
 
 <div class="mining-icon">
-    🚀
+🚀
 </div>
 
 <div class="mining-info">
 
 <div class="mining-name">
-    Miner IV
+Miner IV
 </div>
 
 <div class="mining-rate">
-    +15,000 R / hour
++15,000 R / hour
 </div>
 
 </div>
 
-<button class="buy" id="miner4">
-    1,000,000 R
+<button class="buy"
+id="miner4">
+1,000,000 R
 </button>
 
 </div>
 
 </div>
 
-
-<!-- DAILY -->
 
 <div class="card">
 
 <div class="title">
-    🎁 Daily Reward
+🎁 Daily Reward
 </div>
 
-<button class="copy" id="daily">
-    Claim +1,000 R
+<button class="copy"
+id="daily">
+Claim +1,000 R
 </button>
 
 </div>
@@ -822,34 +847,31 @@ body{
 </section>
 
 
-<!-- MISSIONS -->
-
 <section class="page" id="missions">
 
 <div class="card">
 
 <div class="title">
-    🎯 Missions
-    <small>REWARDS</small>
+🎯 Missions
+<small>REWARDS</small>
 </div>
-
 
 <div class="mission">
 
 <div class="mission-left">
 
 <div class="mission-icon">
-    👆
+👆
 </div>
 
 <div>
 
 <div class="mission-name">
-    Tap 100 times
+Tap 100 times
 </div>
 
 <div class="reward">
-    +1,000 R
++1,000 R
 </div>
 
 </div>
@@ -857,28 +879,27 @@ body{
 </div>
 
 <button class="claim" id="m100">
-    0/100
+0/100
 </button>
 
 </div>
-
 
 <div class="mission">
 
 <div class="mission-left">
 
 <div class="mission-icon">
-    R
+R
 </div>
 
 <div>
 
 <div class="mission-name">
-    Earn 10,000 R
+Earn 10,000 R
 </div>
 
 <div class="reward">
-    +2,500 R
++2,500 R
 </div>
 
 </div>
@@ -886,28 +907,27 @@ body{
 </div>
 
 <button class="claim" id="mCoins">
-    Claim
+Claim
 </button>
 
 </div>
-
 
 <div class="mission">
 
 <div class="mission-left">
 
 <div class="mission-icon">
-    🔥
+🔥
 </div>
 
 <div>
 
 <div class="mission-name">
-    Reach Combo x10
+Reach Combo x10
 </div>
 
 <div class="reward">
-    +3,000 R
++3,000 R
 </div>
 
 </div>
@@ -915,7 +935,7 @@ body{
 </div>
 
 <button class="claim" id="mCombo">
-    Claim
+Claim
 </button>
 
 </div>
@@ -924,28 +944,28 @@ body{
 
 </section>
 
-
-<!-- FRIENDS -->
 
 <section class="page" id="friends">
 
 <div class="card">
 
 <div class="title">
-    👥 Friends
-    <small>REFERRAL</small>
+👥 Friends
+<small>REFERRAL</small>
 </div>
 
 <p style="color:#8290a5;font-size:11px">
 Invite friends and earn R.
 </p>
 
-<div class="referral" id="referral">
-Telegram referral link
+<div class="referral"
+id="referral">
+Loading...
 </div>
 
-<button class="copy" id="copy">
-    Copy Invite Link
+<button class="copy"
+id="copy">
+Copy Invite Link
 </button>
 
 </div>
@@ -953,27 +973,25 @@ Telegram referral link
 </section>
 
 
-<!-- LEAGUE -->
-
 <section class="page" id="league">
 
 <div class="card">
 
 <div class="title">
-    🏆 League
-    <small>WEEKLY</small>
+🏆 League
+<small>WEEKLY</small>
 </div>
 
 <div class="league">
 
 <div class="league-icon">
-    🥇
+🥇
 </div>
 
 <div class="league-info">
 
 <div class="league-name">
-    Gold League
+Gold League
 </div>
 
 <p>
@@ -983,7 +1001,7 @@ Keep tapping to climb.
 </div>
 
 <div class="rank">
-    #12
+#12
 </div>
 
 </div>
@@ -992,75 +1010,73 @@ Keep tapping to climb.
 
 </section>
 
-
-<!-- PROFILE -->
 
 <section class="page" id="profile">
 
 <div class="card">
 
 <div class="title">
-    👤 Profile
+👤 Profile
 </div>
 
 <div class="profile-row">
-    <span>Username</span>
-    <b id="username">Guest</b>
+<span>Username</span>
+<b id="username">Guest</b>
 </div>
 
 <div class="profile-row">
-    <span>Balance</span>
-    <b>
-        <span id="profileBalance">0</span> R
-    </b>
+<span>Balance</span>
+<b>
+<span id="profileBalance">0</span> R
+</b>
 </div>
 
 <div class="profile-row">
-    <span>Level</span>
-    <b id="profileLevel">1</b>
+<span>Level</span>
+<b id="profileLevel">1</b>
 </div>
 
 <div class="profile-row">
-    <span>Total Taps</span>
-    <b id="totalTaps">0</b>
+<span>Total Taps</span>
+<b id="totalTaps">0</b>
 </div>
 
 <div class="profile-row">
-    <span>Tap Power</span>
-    <b id="profilePower">1</b>
+<span>Tap Power</span>
+<b id="profilePower">1</b>
 </div>
 
 <div class="profile-row">
-    <span>Bot Level</span>
-    <b id="profileBot">0</b>
+<span>Bot Level</span>
+<b id="profileBot">0</b>
 </div>
 
 <div class="profile-row">
-    <span>Mining</span>
-    <b id="profileMining">0 R/hour</b>
+<span>Mining</span>
+<b id="profileMining">
+0 R/hour
+</b>
 </div>
 
 </div>
 
 </section>
 
-
-<!-- LISTING -->
 
 <section class="page" id="listing">
 
 <div class="card listing">
 
 <div class="listing-icon">
-    📋
+📋
 </div>
 
 <div class="coming">
-    COMING SOON
+COMING SOON
 </div>
 
 <div class="coming-sub">
-    Listing will be available soon.
+Listing will be available soon.
 </div>
 
 </div>
@@ -1070,38 +1086,49 @@ Keep tapping to climb.
 </div>
 
 
-<!-- NAV -->
-
 <nav class="nav">
 
-<button class="active" data-page="home">
-    <span>🏠</span>
-    Home
+<button class="active"
+data-page="home">
+
+<span>🏠</span>
+Home
+
 </button>
 
 <button data-page="missions">
-    <span>🎯</span>
-    Missions
+
+<span>🎯</span>
+Missions
+
 </button>
 
 <button data-page="friends">
-    <span>👥</span>
-    Friends
+
+<span>👥</span>
+Friends
+
 </button>
 
 <button data-page="league">
-    <span>🏆</span>
-    League
+
+<span>🏆</span>
+League
+
 </button>
 
 <button data-page="profile">
-    <span>👤</span>
-    Profile
+
+<span>👤</span>
+Profile
+
 </button>
 
 <button data-page="listing">
-    <span>📋</span>
-    Listing
+
+<span>📋</span>
+Listing
+
 </button>
 
 </nav>
@@ -1109,1077 +1136,1600 @@ Keep tapping to climb.
 
 <script>
 
-/* =========================
-   DATA
-========================= */
+/* =====================================================
+   TAP COIN BACKEND
+===================================================== */
 
-let balance =
-Number(localStorage.getItem("r_balance") || 0);
+const API =
+"https://tap-coin-api.onrender.com";
 
-let energy =
-Number(localStorage.getItem("r_energy") || 1000);
 
-let maxEnergy =
-Number(localStorage.getItem("r_max_energy") || 1000);
+let telegramUser = null;
 
-let xp =
-Number(localStorage.getItem("r_xp") || 0);
+let telegramId = null;
 
-let taps =
-Number(localStorage.getItem("r_taps") || 0);
+let username = "Guest";
 
-let combo =
-Number(localStorage.getItem("r_combo") || 1);
 
-let tapPower =
-Number(localStorage.getItem("r_power") || 1);
+let balance = 0;
+let energy = 1000;
+let maxEnergy = 1000;
 
-let botLevel =
-Number(localStorage.getItem("r_bot") || 0);
+let xp = 0;
+let taps = 0;
 
-let miningRate =
-Number(localStorage.getItem("r_mining") || 0);
+let combo = 1;
+let tapPower = 1;
 
-let lastMining =
-Number(localStorage.getItem("r_last_mining") || Date.now());
+let botLevel = 0;
+let miningRate = 0;
 
 let doubleTap = false;
 let turbo = false;
-let botStarted = false;
+
 let lastTap = 0;
 
+let serverOnline = false;
 
-/* =========================
-   FORMAT
-========================= */
+
+/* =====================================================
+   TELEGRAM
+===================================================== */
+
+function setupTelegram(){
+
+    if(
+        window.Telegram &&
+        Telegram.WebApp
+    ){
+
+        Telegram.WebApp.ready();
+
+        Telegram.WebApp.expand();
+
+        telegramUser =
+            Telegram.WebApp
+            .initDataUnsafe
+            ?.user;
+
+    }
+
+
+    if(telegramUser){
+
+        telegramId =
+            telegramUser.id;
+
+        username =
+            telegramUser.username
+            ? "@" +
+              telegramUser.username
+            : telegramUser.first_name ||
+              "Guest";
+
+    }else{
+
+        /*
+           Барои тест дар браузер.
+           Дар Mini App ID-и воқеии Telegram истифода мешавад.
+        */
+
+        telegramId = 6414042900;
+
+        username = "Guest";
+
+    }
+
+
+    document.getElementById(
+        "username"
+    ).textContent =
+        username;
+
+
+    document.getElementById(
+        "referral"
+    ).textContent =
+        "https://t.me/YourBot?start=ref_" +
+        telegramId;
+
+}
+
+
+/* =====================================================
+   NUMBER
+===================================================== */
 
 function number(n){
-    return Math.floor(n).toLocaleString("en-US");
-}
 
-
-/* =========================
-   SAVE
-========================= */
-
-function save(){
-
-localStorage.setItem(
-"r_balance",balance
-);
-
-localStorage.setItem(
-"r_energy",energy
-);
-
-localStorage.setItem(
-"r_max_energy",maxEnergy
-);
-
-localStorage.setItem(
-"r_xp",xp
-);
-
-localStorage.setItem(
-"r_taps",taps
-);
-
-localStorage.setItem(
-"r_combo",combo
-);
-
-localStorage.setItem(
-"r_power",tapPower
-);
-
-localStorage.setItem(
-"r_bot",botLevel
-);
-
-localStorage.setItem(
-"r_mining",miningRate
-);
-
-localStorage.setItem(
-"r_last_mining",lastMining
-);
+    return Math.floor(
+        Number(n || 0)
+    ).toLocaleString("en-US");
 
 }
 
 
-/* =========================
-   MINING REWARD
-========================= */
-
-function calculateMining(){
-
-if(miningRate <= 0)
-return 0;
-
-let now = Date.now();
-
-let seconds =
-(now-lastMining)/1000;
-
-let reward =
-seconds/3600*miningRate;
-
-if(reward >= 1){
-
-balance += reward;
-
-lastMining = now;
-
-save();
-
-}
-
-return reward;
-}
-
-
-/* =========================
-   UPDATE
-========================= */
+/* =====================================================
+   UPDATE UI
+===================================================== */
 
 function update(){
 
-calculateMining();
+    const level =
+        Math.floor(xp / 1000) + 1;
 
-let level =
-Math.floor(xp/1000)+1;
-
-let xpMax =
-level*1000;
+    const xpMax =
+        level * 1000;
 
 
-document.getElementById(
-"balance"
-).textContent =
-number(balance);
+    document.getElementById(
+        "balance"
+    ).textContent =
+        number(balance);
 
 
-document.getElementById(
-"energy"
-).textContent =
-number(energy);
+    document.getElementById(
+        "energy"
+    ).textContent =
+        number(energy);
 
 
-document.getElementById(
-"maxEnergy"
-).textContent =
-number(maxEnergy);
+    document.getElementById(
+        "maxEnergy"
+    ).textContent =
+        number(maxEnergy);
 
 
-document.getElementById(
-"level"
-).textContent =
-level;
+    document.getElementById(
+        "level"
+    ).textContent =
+        level;
 
 
-document.getElementById(
-"xp"
-).textContent =
-number(xp);
+    document.getElementById(
+        "xp"
+    ).textContent =
+        number(xp);
 
 
-document.getElementById(
-"xpMax"
-).textContent =
-number(xpMax);
+    document.getElementById(
+        "xpMax"
+    ).textContent =
+        number(xpMax);
 
 
-document.getElementById(
-"xpFill"
-).style.width =
-Math.min(
-xp/xpMax*100,
-100
-)+"%";
+    document.getElementById(
+        "xpFill"
+    ).style.width =
+        Math.min(
+            xp / xpMax * 100,
+            100
+        ) + "%";
 
 
-document.getElementById(
-"energyFill"
-).style.width =
-Math.max(
-0,
-energy/maxEnergy*100
-)+"%";
+    document.getElementById(
+        "energyFill"
+    ).style.width =
+        Math.max(
+            0,
+            energy / maxEnergy * 100
+        ) + "%";
 
 
-document.getElementById(
-"combo"
-).textContent =
-combo;
+    document.getElementById(
+        "combo"
+    ).textContent =
+        combo;
 
 
-document.getElementById(
-"tapPower"
-).textContent =
-tapPower*
-(doubleTap?2:1);
+    document.getElementById(
+        "tapPower"
+    ).textContent =
+        tapPower *
+        (doubleTap ? 2 : 1);
 
 
-document.getElementById(
-"profileBalance"
-).textContent =
-number(balance);
+    document.getElementById(
+        "profileBalance"
+    ).textContent =
+        number(balance);
 
 
-document.getElementById(
-"profileLevel"
-).textContent =
-level;
+    document.getElementById(
+        "profileLevel"
+    ).textContent =
+        level;
 
 
-document.getElementById(
-"totalTaps"
-).textContent =
-number(taps);
+    document.getElementById(
+        "totalTaps"
+    ).textContent =
+        number(taps);
 
 
-document.getElementById(
-"profilePower"
-).textContent =
-tapPower;
+    document.getElementById(
+        "profilePower"
+    ).textContent =
+        tapPower;
 
 
-document.getElementById(
-"profileBot"
-).textContent =
-botLevel;
+    document.getElementById(
+        "profileBot"
+    ).textContent =
+        botLevel;
 
 
-document.getElementById(
-"profileMining"
-).textContent =
-number(miningRate)+" R/hour";
+    document.getElementById(
+        "profileMining"
+    ).textContent =
+        number(miningRate) +
+        " R/hour";
 
 
-document.getElementById(
-"m100"
-).textContent =
-Math.min(taps,100)+"/100";
+    document.getElementById(
+        "botStatus"
+    ).textContent =
+        botLevel
+        ? "LEVEL " + botLevel
+        : "OFF";
 
 
-document.getElementById(
-"botStatus"
-).textContent =
-botLevel
-? "LEVEL "+botLevel
-: "OFF";
-
-
-save();
+    document.getElementById(
+        "m100"
+    ).textContent =
+        Math.min(
+            taps,
+            100
+        ) + "/100";
 
 }
 
 
-/* =========================
+/* =====================================================
+   LOAD SERVER
+===================================================== */
+
+async function loadState(){
+
+    try{
+
+        const url =
+            API +
+            "/api/state" +
+            "?telegram_id=" +
+            encodeURIComponent(
+                telegramId
+            ) +
+            "&username=" +
+            encodeURIComponent(
+                username
+            );
+
+
+        const response =
+            await fetch(url);
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if(data.error){
+
+            throw new Error(
+                data.error
+            );
+
+        }
+
+
+        balance =
+            Number(
+                data.balance || 0
+            );
+
+
+        energy =
+            Number(
+                data.energy || 1000
+            );
+
+
+        maxEnergy =
+            Number(
+                data.max_energy || 1000
+            );
+
+
+        xp =
+            Number(
+                data.xp || 0
+            );
+
+
+        taps =
+            Number(
+                data.total_taps || 0
+            );
+
+
+        tapPower =
+            Number(
+                data.tap_power || 1
+            );
+
+
+        botLevel =
+            Number(
+                data.autobot_level || 0
+            );
+
+
+        miningRate =
+            Number(
+                data.mining_rate || 0
+            );
+
+
+        serverOnline = true;
+
+
+        document.getElementById(
+            "serverStatus"
+        ).textContent =
+            "● ONLINE";
+
+
+        /*
+           Offline rewards
+        */
+
+        const miningReward =
+            Number(
+                data.offline_mining || 0
+            );
+
+
+        const botReward =
+            Number(
+                data.offline_autobot || 0
+            );
+
+
+        if(miningReward > 0){
+
+            toast(
+                "+" +
+                number(miningReward) +
+                " R Mining"
+            );
+
+        }
+
+
+        if(botReward > 0){
+
+            setTimeout(()=>{
+
+                toast(
+                    "+" +
+                    number(botReward) +
+                    " R AutoBot"
+                );
+
+            },1800);
+
+        }
+
+
+        update();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        serverOnline = false;
+
+
+        document.getElementById(
+            "serverStatus"
+        ).textContent =
+            "● OFFLINE";
+
+
+        toast(
+            "Server connection error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TAP SERVER
+===================================================== */
+
+async function serverTap(
+    fingers=1
+){
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/tap",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        telegram_id:
+                            telegramId,
+
+                        username:
+                            username,
+
+                        fingers:
+                            fingers
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            toast(
+                data.error ||
+                "Tap error"
+            );
+
+            await loadState();
+
+            return false;
+
+        }
+
+
+        balance =
+            Number(
+                data.balance
+            );
+
+
+        energy =
+            Number(
+                data.energy
+            );
+
+
+        xp =
+            Number(
+                data.xp
+            );
+
+
+        taps =
+            Number(
+                data.total_taps
+            );
+
+
+        update();
+
+        return true;
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Server error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
    TAP
-========================= */
+===================================================== */
 
-function tap(fingers=1){
+async function tap(
+    fingers=1
+){
 
-if(energy<=0){
+    if(energy <= 0){
 
-toast("No Energy");
+        toast(
+            "No Energy"
+        );
 
-return;
+        return;
+
+    }
+
+
+    let now =
+        Date.now();
+
+
+    if(
+        now -
+        lastTap <
+        900
+    ){
+
+        combo =
+            Math.min(
+                20,
+                combo + 1
+            );
+
+    }else{
+
+        combo = 1;
+
+    }
+
+
+    lastTap = now;
+
+
+    let power =
+        tapPower;
+
+
+    if(doubleTap)
+        power *= 2;
+
+
+    if(turbo)
+        power *= 3;
+
+
+    const used =
+        Math.min(
+            fingers,
+            Math.floor(energy)
+        );
+
+
+    const reward =
+        power * used;
+
+
+    /*
+       Optimistic UI
+    */
+
+    balance += reward;
+
+    energy -= used;
+
+    xp += reward;
+
+    taps += used;
+
+
+    update();
+
+
+    float(
+        "+" +
+        number(reward) +
+        " R"
+    );
+
+
+    /*
+       Real server save
+    */
+
+    await serverTap(
+        used
+    );
 
 }
 
-let power =
-tapPower;
 
-if(doubleTap)
-power*=2;
-
-if(turbo)
-power*=3;
-
-
-let used =
-Math.min(
-fingers,
-energy
-);
-
-
-let reward =
-power*used;
-
-
-balance+=reward;
-
-xp+=reward;
-
-energy-=used;
-
-taps+=used;
-
-
-let now =
-Date.now();
-
-if(now-lastTap<900){
-
-combo=
-Math.min(
-20,
-combo+1
-);
-
-}else{
-
-combo=1;
-
-}
-
-lastTap=now;
-
-update();
-
-float(
-"+"+number(reward)+" R"
-);
-
-}
-
-
-/* =========================
-   MULTI TOUCH
-========================= */
+/* =====================================================
+   TAP BUTTON
+===================================================== */
 
 const tapButton =
-document.getElementById("tap");
+    document.getElementById(
+        "tap"
+    );
 
 
 tapButton.addEventListener(
-"touchstart",
-function(e){
+    "touchstart",
+    function(e){
 
-e.preventDefault();
+        e.preventDefault();
 
-tap(e.touches.length);
+        tap(
+            Math.min(
+                e.touches.length,
+                5
+            )
+        );
 
-},
-{
-passive:false
-}
+    },
+    {
+        passive:false
+    }
 );
 
 
 tapButton.addEventListener(
-"click",
-function(){
+    "click",
+    function(){
 
-if("ontouchstart" in window)
-return;
+        if(
+            "ontouchstart" in window
+        )
+            return;
 
-tap(1);
+        tap(1);
 
-}
+    }
 );
 
 
-/* =========================
+/* =====================================================
    FLOAT
-========================= */
+===================================================== */
 
 function float(text){
 
-let el =
-document.createElement("div");
+    const el =
+        document.createElement(
+            "div"
+        );
 
-el.className="float";
 
-el.textContent=text;
+    el.className =
+        "float";
 
-let r =
-tapButton.getBoundingClientRect();
 
-el.style.left =
-r.left+r.width/2-25+"px";
+    el.textContent =
+        text;
 
-el.style.top =
-r.top+30+"px";
 
-document.body.appendChild(el);
+    const r =
+        tapButton
+        .getBoundingClientRect();
 
-setTimeout(
-()=>el.remove(),
-800
-);
+
+    el.style.left =
+        r.left +
+        r.width / 2 -
+        25 +
+        "px";
+
+
+    el.style.top =
+        r.top +
+        30 +
+        "px";
+
+
+    document.body.appendChild(
+        el
+    );
+
+
+    setTimeout(
+        ()=>el.remove(),
+        800
+    );
 
 }
 
 
-/* =========================
+/* =====================================================
+   BUY AUTOBOT
+===================================================== */
+
+document.getElementById(
+    "buyBot"
+).onclick =
+async function(){
+
+    const prices = {
+        0:5000,
+        1:15000,
+        2:50000
+    };
+
+
+    const price =
+        prices[botLevel];
+
+
+    if(price === undefined){
+
+        toast(
+            "Maximum level"
+        );
+
+        return;
+
+    }
+
+
+    if(balance < price){
+
+        toast(
+            "Need " +
+            number(price) +
+            " R"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/autobot/buy",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        telegram_id:
+                            telegramId
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            toast(
+                data.error ||
+                "AutoBot error"
+            );
+
+            return;
+
+        }
+
+
+        balance =
+            Number(
+                data.balance
+            );
+
+
+        botLevel =
+            Number(
+                data.autobot_level
+            );
+
+
+        update();
+
+
+        toast(
+            "🤖 AutoBot Level " +
+            botLevel +
+            " activated"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Server error"
+        );
+
+    }
+
+};
+
+
+/* =====================================================
+   BUY MINER
+===================================================== */
+
+async function buyMiner(
+    miner,
+    button
+){
+
+    try{
+
+        const response =
+            await fetch(
+                API +
+                "/api/mining/buy",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        telegram_id:
+                            telegramId,
+
+                        miner:
+                            miner
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            toast(
+                data.error ||
+                "Mining error"
+            );
+
+            return;
+
+        }
+
+
+        balance =
+            Number(
+                data.balance
+            );
+
+
+        miningRate =
+            Number(
+                data.mining_rate
+            );
+
+
+        button.textContent =
+            "ACTIVE";
+
+
+        button.classList.add(
+            "done"
+        );
+
+
+        button.disabled =
+            true;
+
+
+        update();
+
+
+        toast(
+            "⛏️ Mining activated"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Server error"
+        );
+
+    }
+
+}
+
+
+document.getElementById(
+    "miner1"
+).onclick =
+()=>buyMiner(
+    1,
+    document.getElementById(
+        "miner1"
+    )
+);
+
+
+document.getElementById(
+    "miner2"
+).onclick =
+()=>buyMiner(
+    2,
+    document.getElementById(
+        "miner2"
+    )
+);
+
+
+document.getElementById(
+    "miner3"
+).onclick =
+()=>buyMiner(
+    3,
+    document.getElementById(
+        "miner3"
+    )
+);
+
+
+document.getElementById(
+    "miner4"
+).onclick =
+()=>buyMiner(
+    4,
+    document.getElementById(
+        "miner4"
+    )
+);
+
+
+/* =====================================================
    FULL ENERGY
-========================= */
+===================================================== */
 
 document.getElementById(
-"fullEnergy"
-).onclick=()=>{
+    "fullEnergy"
+).onclick =
+function(){
 
-if(balance<500){
+    if(balance < 500){
 
-toast("Need 500 R");
+        toast(
+            "Need 500 R"
+        );
 
-return;
+        return;
 
-}
+    }
 
-balance-=500;
 
-energy=maxEnergy;
+    balance -= 500;
 
-update();
+    energy =
+        maxEnergy;
 
-toast("Energy restored");
+
+    update();
+
+
+    toast(
+        "Energy restored"
+    );
 
 };
 
 
-/* =========================
-   DOUBLE
-========================= */
+/* =====================================================
+   DOUBLE TAP
+===================================================== */
 
 document.getElementById(
-"double"
-).onclick=()=>{
+    "double"
+).onclick =
+function(){
 
-if(balance<1000){
+    if(balance < 1000){
 
-toast("Need 1,000 R");
+        toast(
+            "Need 1,000 R"
+        );
 
-return;
+        return;
 
-}
+    }
 
-balance-=1000;
 
-doubleTap=true;
+    balance -= 1000;
 
-update();
+    doubleTap = true;
 
-toast("2× Tap activated");
 
-setTimeout(
-()=>{
+    update();
 
-doubleTap=false;
 
-update();
+    toast(
+        "2× Tap activated"
+    );
 
-toast("2× Tap ended");
 
-},
-60000
-);
+    setTimeout(
+        ()=>{
+            doubleTap = false;
+
+            update();
+
+            toast(
+                "2× Tap ended"
+            );
+
+        },
+        60000
+    );
 
 };
 
 
-/* =========================
+/* =====================================================
    TURBO
-========================= */
+===================================================== */
 
 document.getElementById(
-"turbo"
-).onclick=()=>{
+    "turbo"
+).onclick =
+function(){
 
-if(balance<2500){
+    if(balance < 2500){
 
-toast("Need 2,500 R");
+        toast(
+            "Need 2,500 R"
+        );
 
-return;
+        return;
 
-}
+    }
 
-balance-=2500;
 
-turbo=true;
+    balance -= 2500;
 
-update();
+    turbo = true;
 
-toast("Turbo activated");
 
-setTimeout(
-()=>{
+    update();
 
-turbo=false;
 
-update();
+    toast(
+        "Turbo activated"
+    );
 
-toast("Turbo ended");
 
-},
-30000
-);
+    setTimeout(
+        ()=>{
+            turbo = false;
+
+            update();
+
+            toast(
+                "Turbo ended"
+            );
+
+        },
+        30000
+    );
 
 };
 
 
-/* =========================
-   TAP BOT
-========================= */
-
-document.getElementById(
-"buyBot"
-).onclick=()=>{
-
-let price;
-
-if(botLevel===0)
-price=5000;
-
-else if(botLevel===1)
-price=15000;
-
-else if(botLevel===2)
-price=50000;
-
-else{
-
-toast("Maximum level");
-
-return;
-
-}
-
-
-if(balance<price){
-
-toast(
-"Need "+number(price)+" R"
-);
-
-return;
-
-}
-
-balance-=price;
-
-botLevel++;
-
-update();
-
-toast(
-"Auto Tap Level "+botLevel
-);
-
-startBot();
-
-};
-
-
-/* =========================
-   BOT
-========================= */
-
-function startBot(){
-
-if(botStarted)
-return;
-
-botStarted=true;
-
-setInterval(
-()=>{
-
-if(botLevel<=0)
-return;
-
-if(energy<=0)
-return;
-
-tap(1);
-
-},
-botLevel===1
-?1000
-:botLevel===2
-?500
-:250
-);
-
-}
-
-
-/* =========================
+/* =====================================================
    POWER
-========================= */
+===================================================== */
 
 document.getElementById(
-"power"
-).onclick=()=>{
+    "power"
+).onclick =
+function(){
 
-let price =
-2000*tapPower;
+    const price =
+        2000 * tapPower;
 
-if(balance<price){
 
-toast(
-"Need "+number(price)+" R"
-);
+    if(balance < price){
 
-return;
+        toast(
+            "Need " +
+            number(price) +
+            " R"
+        );
 
-}
+        return;
 
-balance-=price;
+    }
 
-tapPower++;
 
-update();
+    balance -= price;
 
-toast(
-"Tap Power increased"
-);
+    tapPower++;
+
+
+    update();
+
+
+    toast(
+        "Tap Power increased"
+    );
 
 };
 
 
-/* =========================
+/* =====================================================
    ENERGY UPGRADE
-========================= */
+===================================================== */
 
 document.getElementById(
-"energyUpgrade"
-).onclick=()=>{
+    "energyUpgrade"
+).onclick =
+function(){
 
-let price =
-3000*(maxEnergy/1000);
+    const price =
+        3000 *
+        (maxEnergy / 1000);
 
-if(balance<price){
 
-toast(
-"Need "+number(price)+" R"
-);
+    if(balance < price){
 
-return;
+        toast(
+            "Need " +
+            number(price) +
+            " R"
+        );
 
-}
+        return;
 
-balance-=price;
+    }
 
-maxEnergy+=500;
 
-energy+=500;
+    balance -= price;
 
-update();
+    maxEnergy += 500;
 
-toast(
-"Maximum Energy increased"
-);
+    energy += 500;
+
+
+    update();
+
+
+    toast(
+        "Energy upgraded"
+    );
 
 };
 
 
-/* =========================
-   MINING
-========================= */
-
-function buyMining(
-price,
-rate,
-button
-){
-
-if(balance<price){
-
-toast(
-"Need "+number(price)+" R"
-);
-
-return;
-
-}
-
-balance-=price;
-
-miningRate+=rate;
-
-button.textContent="ACTIVE";
-
-button.classList.add("done");
-
-button.disabled=true;
-
-update();
-
-toast(
-"Mining activated"
-);
-
-}
-
-
-document.getElementById(
-"miner1"
-).onclick=()=>{
-
-buyMining(
-10000,
-100,
-document.getElementById("miner1")
-);
-
-};
-
-
-document.getElementById(
-"miner2"
-).onclick=()=>{
-
-buyMining(
-50000,
-600,
-document.getElementById("miner2")
-);
-
-};
-
-
-document.getElementById(
-"miner3"
-).onclick=()=>{
-
-buyMining(
-250000,
-3000,
-document.getElementById("miner3")
-);
-
-};
-
-
-document.getElementById(
-"miner4"
-).onclick=()=>{
-
-buyMining(
-1000000,
-15000,
-document.getElementById("miner4")
-);
-
-};
-
-
-/* =========================
+/* =====================================================
    DAILY
-========================= */
+===================================================== */
 
 document.getElementById(
-"daily"
-).onclick=()=>{
+    "daily"
+).onclick =
+function(){
 
-let today =
-new Date().toDateString();
+    const today =
+        new Date()
+        .toDateString();
 
-let old =
-localStorage.getItem("r_daily");
 
-if(old===today){
+    const old =
+        localStorage.getItem(
+            "tap_daily"
+        );
 
-toast(
-"Already claimed"
-);
 
-return;
+    if(old === today){
 
-}
+        toast(
+            "Already claimed"
+        );
 
-balance+=1000;
+        return;
 
-xp+=1000;
+    }
 
-localStorage.setItem(
-"r_daily",
-today
-);
 
-update();
+    balance += 1000;
 
-toast(
-"+1,000 R"
-);
+    xp += 1000;
+
+
+    localStorage.setItem(
+        "tap_daily",
+        today
+    );
+
+
+    update();
+
+
+    toast(
+        "+1,000 R"
+    );
 
 };
 
 
-/* =========================
+/* =====================================================
    MISSIONS
-========================= */
+===================================================== */
 
 document.getElementById(
-"m100"
-).onclick=()=>{
+    "m100"
+).onclick =
+function(){
 
-if(taps<100){
+    if(taps < 100){
 
-toast(
-"Tap 100 times first"
-);
+        toast(
+            "Tap 100 times first"
+        );
 
-return;
+        return;
 
-}
+    }
 
-if(localStorage.getItem("r_m100"))
-return;
 
-balance+=1000;
+    if(
+        localStorage.getItem(
+            "m100"
+        )
+    )
+        return;
 
-localStorage.setItem(
-"r_m100",
-"1"
-);
 
-document.getElementById(
-"m100"
-).textContent="DONE";
+    balance += 1000;
 
-update();
+
+    localStorage.setItem(
+        "m100",
+        "1"
+    );
+
+
+    this.textContent =
+        "DONE";
+
+
+    this.classList.add(
+        "done"
+    );
+
+
+    update();
+
+
+    toast(
+        "+1,000 R"
+    );
 
 };
 
 
 document.getElementById(
-"mCoins"
-).onclick=()=>{
+    "mCoins"
+).onclick =
+function(){
 
-if(balance<10000){
+    if(balance < 10000){
 
-toast(
-"Earn 10,000 R first"
-);
+        toast(
+            "Earn 10,000 R first"
+        );
 
-return;
+        return;
 
-}
-
-if(localStorage.getItem("r_mcoins"))
-return;
-
-balance+=2500;
-
-localStorage.setItem(
-"r_mcoins",
-"1"
-);
-
-document.getElementById(
-"mCoins"
-).textContent="DONE";
-
-update();
-
-};
+    }
 
 
-document.getElementById(
-"mCombo"
-).onclick=()=>{
+    if(
+        localStorage.getItem(
+            "mcoins"
+        )
+    )
+        return;
 
-if(combo<10){
 
-toast(
-"Reach Combo x10"
-);
+    balance += 2500;
 
-return;
 
-}
+    localStorage.setItem(
+        "mcoins",
+        "1"
+    );
 
-if(localStorage.getItem("r_mcombo"))
-return;
 
-balance+=3000;
+    this.textContent =
+        "DONE";
 
-localStorage.setItem(
-"r_mcombo",
-"1"
-);
 
-document.getElementById(
-"mCombo"
-).textContent="DONE";
+    this.classList.add(
+        "done"
+    );
 
-update();
+
+    update();
+
+
+    toast(
+        "+2,500 R"
+    );
 
 };
 
 
-/* =========================
-   NAV
-========================= */
+document.getElementById(
+    "mCombo"
+).onclick =
+function(){
+
+    if(combo < 10){
+
+        toast(
+            "Reach Combo x10"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        localStorage.getItem(
+            "mcombo"
+        )
+    )
+        return;
+
+
+    balance += 3000;
+
+
+    localStorage.setItem(
+        "mcombo",
+        "1"
+    );
+
+
+    this.textContent =
+        "DONE";
+
+
+    this.classList.add(
+        "done"
+    );
+
+
+    update();
+
+
+    toast(
+        "+3,000 R"
+    );
+
+};
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
 
 document.querySelectorAll(
-".nav button"
-).forEach(button=>{
-
-button.onclick=()=>{
-
-let page =
-button.dataset.page;
-
-document.querySelectorAll(
-".page"
+    ".nav button"
 ).forEach(
-p=>p.classList.remove("active")
+    button => {
+
+        button.onclick =
+        function(){
+
+            const page =
+                this.dataset.page;
+
+
+            document.querySelectorAll(
+                ".page"
+            ).forEach(
+                p =>
+                p.classList
+                .remove("active")
+            );
+
+
+            document.getElementById(
+                page
+            ).classList.add(
+                "active"
+            );
+
+
+            document.querySelectorAll(
+                ".nav button"
+            ).forEach(
+                b =>
+                b.classList
+                .remove("active")
+            );
+
+
+            this.classList.add(
+                "active"
+            );
+
+        };
+
+    }
 );
+
+
+/* =====================================================
+   COPY REFERRAL
+===================================================== */
 
 document.getElementById(
-page
-).classList.add("active");
+    "copy"
+).onclick =
+async function(){
 
-document.querySelectorAll(
-".nav button"
-).forEach(
-b=>b.classList.remove("active")
-);
+    const link =
+        document.getElementById(
+            "referral"
+        ).textContent;
 
-button.classList.add("active");
+
+    try{
+
+        await navigator
+            .clipboard
+            .writeText(link);
+
+
+        toast(
+            "Link copied"
+        );
+
+
+    }catch{
+
+        toast(
+            "Copy failed"
+        );
+
+    }
 
 };
 
-});
 
-
-/* =========================
-   REFERRAL
-========================= */
-
-if(
-window.Telegram &&
-Telegram.WebApp
-){
-
-Telegram.WebApp.ready();
-
-Telegram.WebApp.expand();
-
-let user =
-Telegram.WebApp
-.initDataUnsafe
-?.user;
-
-if(user){
-
-document.getElementById(
-"username"
-).textContent =
-user.username
-?
-"@"+user.username
-:
-user.first_name;
-
-let link =
-"https://t.me/YourBot?start=ref_"+
-user.id;
-
-document.getElementById(
-"referral"
-).textContent =
-link;
-
-document.getElementById(
-"copy"
-).onclick=async()=>{
-
-try{
-
-await navigator.clipboard
-.writeText(link);
-
-toast(
-"Link copied"
-);
-
-}catch{
-
-toast(
-"Copy failed"
-);
-
-}
-
-};
-
-}
-
-}
-
-
-/* =========================
-   ENERGY REGEN
-========================= */
+/* =====================================================
+   ENERGY
+===================================================== */
 
 setInterval(
-()=>{
+    ()=>{
+        if(
+            energy <
+            maxEnergy
+        ){
 
-if(energy<maxEnergy){
+            energy++;
 
-energy++;
+            update();
 
-update();
+        }
 
-}
-
-},
-3000
+    },
+    3000
 );
 
 
-/* =========================
-   MINING UPDATE
-========================= */
+/* =====================================================
+   SYNC
+===================================================== */
+
+/*
+   Ҳар 10 сония серверро месанҷем.
+   Ин муҳим аст, зеро Mining ва AutoBot
+   дар сервер ҳисоб мешаванд.
+*/
 
 setInterval(
-()=>{
-
-update();
-
-},
-1000
+    async ()=>{
+        await loadState();
+    },
+    10000
 );
 
 
-/* =========================
+/* =====================================================
    TOAST
-========================= */
+===================================================== */
 
 let toastTimer;
 
+
 function toast(text){
 
-let el =
-document.getElementById("toast");
+    const el =
+        document.getElementById(
+            "toast"
+        );
 
-el.textContent=text;
 
-el.classList.add("show");
+    el.textContent =
+        text;
 
-clearTimeout(toastTimer);
 
-toastTimer=setTimeout(
-()=>el.classList.remove("show"),
-1800
-);
+    el.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            ()=>{
+                el.classList.remove(
+                    "show"
+                );
+            },
+            1800
+        );
 
 }
 
 
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
+
+setupTelegram();
 
 update();
+
+loadState();
 
 </script>
 
